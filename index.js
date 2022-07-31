@@ -13,11 +13,47 @@ const offset = {
     x: -2000,
     y: -2000
 }
-const boundaries = []
+const boundaries = [];
+
+// Map Img
+const mapImg = new Image();
+mapImg.src = 'Images/map.png';
+
+// Foreground Img
+const foregroundImg = new Image();
+foregroundImg.src = 'Images/overlayer.png';
+
+// Objects images
+const apple = new Image();
+apple.src = 'Images/Apple.png';
+
+// Player Img
+const playerDownImg = new Image();
+playerDownImg.src = 'Images/playerDown.png';
+const playerUpImg = new Image();
+playerUpImg.src = 'Images/playerUp.png';
+const playerLeftImg = new Image();
+playerLeftImg.src = 'Images/playerLeft.png';
+const playerRightImg = new Image();
+playerRightImg.src = 'Images/playerRight.png';
+const playerFastDown = new Image();
+playerFastDown.src = 'Images/playerDownFast.png';
+const playerFastUp = new Image();
+playerFastUp.src = 'Images/playerUpFast.png';
+const playerFastLeft = new Image();
+playerFastLeft.src = 'Images/playerLeftFast.png';
+const playerFastRight = new Image();
+playerFastRight.src = 'Images/playerRightFast.png';
+
+// Roof Img
+const roofImgTrue = new Image()
+roofImgTrue.src = 'Images/roof.png'
+const roofImgFalse = new Image()
+roofImgFalse.src = 'Images/roofOpacity20.png'
 
 collision_map.forEach((row, i) => {
     row.forEach((symbol, j) => {
-        if (symbol != 0)
+        if (symbol == 1359)
         {
             boundaries.push(
                 new Boundary({
@@ -27,41 +63,20 @@ collision_map.forEach((row, i) => {
                     }
                 }))
         }
+        else if(symbol == 1360)
+        {
+            apples.push(
+                new Sprite({
+                    position: {
+                        x: j * Boundary.width + offset.x,
+                        y: i * Boundary.height + offset.y
+                    },
+                    image: apple
+                })
+            )
+        }
     })
 })
-
-// Map Img
-const mapImg = new Image();
-mapImg.src = 'Images/map.png'
-
-// Foreground Img
-const foregroundImg = new Image();
-foregroundImg.src = 'Images/overlayer.png'
-
-
-// Player Img
-const playerDownImg = new Image()
-playerDownImg.src = 'Images/playerDown.png'
-const playerUpImg = new Image()
-playerUpImg.src = 'Images/playerUp.png'
-const playerLeftImg = new Image()
-playerLeftImg.src = 'Images/playerLeft.png'
-const playerRightImg = new Image()
-playerRightImg.src = 'Images/playerRight.png'
-const playerFastDown = new Image()
-playerFastDown.src = 'Images/playerDownFast.png'
-const playerFastUp = new Image()
-playerFastUp.src = 'Images/playerUpFast.png'
-const playerFastLeft = new Image()
-playerFastLeft.src = 'Images/playerLeftFast.png'
-const playerFastRight = new Image()
-playerFastRight.src = 'Images/playerRightFast.png'
-
-// Roof Img
-const roofImgTrue = new Image()
-roofImgTrue.src = 'Images/roof.png'
-const roofImgFalse = new Image()
-roofImgFalse.src = 'Images/roofOpacity20.png'
 
 // Creating the backGround Object
 const backGround = new Sprite({
@@ -139,7 +154,7 @@ const keys = {
 }
 
 let speedUp = false;
-const staticMaps = [backGround, ...boundaries, foreground, roof_img_false, roof_img_true]
+const staticMaps = [backGround, ...apples, ...boundaries, foreground, roof_img_false, roof_img_true]
 
 function rectangularCollision ({object1, object2})
 {

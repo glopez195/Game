@@ -36,7 +36,7 @@ class Sprite {
     }
 }
 
-class Boundary {
+class Map_Object {
     static width = 80
     static height = 80
     constructor({position}){
