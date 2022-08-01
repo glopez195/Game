@@ -8,12 +8,17 @@ const collision_map = []
 for (let i = 0; i < collisions.length; i += 60) {
     collision_map.push(collisions.slice(i, 60 + i))
 }
+const apples_map = []
+for (let i = 0; i < apples_json.length; i += 60) {
+    apples_map.push(apples_json.slice(i, 60 + i))
+}
 
 const offset = {
     x: -2000,
     y: -2000
 }
 const boundaries = [];
+const apples = [];
 
 // Map Img
 const mapImg = new Image();
@@ -25,7 +30,7 @@ foregroundImg.src = 'Images/overlayer.png';
 
 // Objects images
 const apple = new Image();
-apple.src = 'Images/Apple.png';
+apple.src = 'Images/apple.png';
 
 // Player Img
 const playerDownImg = new Image();
@@ -60,23 +65,21 @@ collision_map.forEach((row, i) => {
                     position: {
                         x: j * Boundary.width + offset.x,
                         y: i * Boundary.height + offset.y
-                    }
-                }))
-        }
-        else if(symbol == 1360)
-        {
-            apples.push(
-                new Sprite({
-                    position: {
-                        x: j * Boundary.width + offset.x,
-                        y: i * Boundary.height + offset.y
                     },
-                    image: apple
-                })
-            )
+                    color: 'rgba(255, 0, 0, 0)'
+                }))
         }
     })
 })
+apples_map.forEach((row, i) => {
+    row.forEach((symbol, j) => {
+        if (symbol == 1360)
+        {
+            apples.push({position:{x: j * Boundary.width + offset.x, y: i * Boundary.height + offset.y}})
+        }
+    })
+})
+
 
 // Creating the backGround Object
 const backGround = new Sprite({
@@ -154,7 +157,7 @@ const keys = {
 }
 
 let speedUp = false;
-const staticMaps = [backGround, ...apples, ...boundaries, foreground, roof_img_false, roof_img_true]
+const staticMaps = [backGround, ...boundaries,...apples, foreground, roof_img_false, roof_img_true]
 
 function rectangularCollision ({object1, object2})
 {
@@ -170,7 +173,10 @@ function rectangularCollision ({object1, object2})
 function animate() {
     window.requestAnimationFrame(animate)
     backGround.draw();
-    boundaries.forEach(boundary => {  boundary.draw() })
+    boundaries.forEach(boundary => {  boundary.draw();});
+    apples.forEach(apple_item => {
+        c.drawImage(apple, apple_item.position.x, apple_item.position.y)
+    });
     player.draw();
     foreground.draw();
     if (backGround.position.x < -2900 && backGround.position.y > -250)
@@ -179,7 +185,8 @@ function animate() {
     }
     else {roof_img_true.draw();}
     navigate();
-    console.log(backGround.position)    
+    console.log('player');
+    console.log(player.position);
     
 }
 animate()

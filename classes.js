@@ -29,8 +29,8 @@ class Sprite {
         if( this.frames.max > 1) this.frames.elapsed++
         if (this.frames.elapsed % 10 === 0)
         {
-            if (this.frames.val < this.frames.max - 1) this.frames.val++
-            else this.frames.val = 0
+            if (this.frames.val < this.frames.max - 1) this.frames.val++;
+            else this.frames.val = 0;
         }
         
     }
@@ -39,14 +39,15 @@ class Sprite {
 class Boundary {
     static width = 80
     static height = 80
-    constructor({position}){
-        this.position = position
-        this.width = 80
-        this.height = 80
+    constructor({position, color}){
+        this.color = color;
+        this.position = position;
+        this.width = 80;
+        this.height = 80;
     }
 
     draw(){
-        c.fillStyle = 'rgba(255, 0, 0, 0)'
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
+        c.fillStyle = this.color;
+        c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
 }
