@@ -1,16 +1,15 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
+const canvas = document.querySelector('canvas');
+const c = canvas.getContext('2d');
 
-canvas.width = 1280
-canvas.height = 720
+canvas.width = 1280;
+canvas.height = 720;
 
-const collision_map = []
-for (let i = 0; i < collisions.length; i += 60) {
-    collision_map.push(collisions.slice(i, 60 + i))
-}
-const apples_map = []
-for (let i = 0; i < apples_json.length; i += 60) {
-    apples_map.push(apples_json.slice(i, 60 + i))
+const MAP_TILES_WIDTH = 60;
+
+const map_tiles = []
+for (let i = 0; i < collisions_map.length; i += MAP_TILES_WIDTH) {
+    map_tiles
+.push(collisions_map.slice(i, MAP_TILES_WIDTH + i))
 }
 
 const offset = {
@@ -20,66 +19,53 @@ const offset = {
 const boundaries = [];
 const apples = [];
 
-// Map Img
-const mapImg = new Image();
-mapImg.src = 'Images/map.png';
-
-// Foreground Img
-const foregroundImg = new Image();
-foregroundImg.src = 'Images/overlayer.png';
-
-// Objects images
-const apple = new Image();
-apple.src = 'Images/apple.png';
-
-// Player Img
-const playerDownImg = new Image();
-playerDownImg.src = 'Images/playerDown.png';
-const playerUpImg = new Image();
-playerUpImg.src = 'Images/playerUp.png';
-const playerLeftImg = new Image();
-playerLeftImg.src = 'Images/playerLeft.png';
-const playerRightImg = new Image();
-playerRightImg.src = 'Images/playerRight.png';
-const playerFastDown = new Image();
-playerFastDown.src = 'Images/playerDownFast.png';
-const playerFastUp = new Image();
-playerFastUp.src = 'Images/playerUpFast.png';
-const playerFastLeft = new Image();
-playerFastLeft.src = 'Images/playerLeftFast.png';
-const playerFastRight = new Image();
-playerFastRight.src = 'Images/playerRightFast.png';
-
-// Roof Img
-const roofImgTrue = new Image()
-roofImgTrue.src = 'Images/roof.png'
-const roofImgFalse = new Image()
-roofImgFalse.src = 'Images/roofOpacity20.png'
-
-collision_map.forEach((row, i) => {
+map_tiles.forEach((row, i) => {
     row.forEach((symbol, j) => {
-        if (symbol == 1359)
+        if (symbol != 0)
         {
             boundaries.push(
                 new Boundary({
                     position: {
                         x: j * Boundary.width + offset.x,
                         y: i * Boundary.height + offset.y
-                    },
-                    color: 'rgba(255, 0, 0, 0)'
+                    }
                 }))
         }
     })
 })
-apples_map.forEach((row, i) => {
-    row.forEach((symbol, j) => {
-        if (symbol == 1360)
-        {
-            apples.push({position:{x: j * Boundary.width + offset.x, y: i * Boundary.height + offset.y}})
-        }
-    })
-})
 
+// Map Img
+const mapImg = new Image();
+mapImg.src = '/Images/map.png';
+
+// Foreground Img
+const foregroundImg = new Image();
+foregroundImg.src = '/Images/overlayer.png';
+
+
+// Player Img
+const playerDownImg = new Image()
+playerDownImg.src = 'Images/playerDown.png'
+const playerUpImg = new Image()
+playerUpImg.src = 'Images/playerUp.png'
+const playerLeftImg = new Image()
+playerLeftImg.src = 'Images/playerLeft.png'
+const playerRightImg = new Image()
+playerRightImg.src = 'Images/playerRight.png'
+const playerFastDown = new Image()
+playerFastDown.src = 'Images/playerDownFast.png'
+const playerFastUp = new Image()
+playerFastUp.src = 'Images/playerUpFast.png'
+const playerFastLeft = new Image()
+playerFastLeft.src = 'Images/playerLeftFast.png'
+const playerFastRight = new Image()
+playerFastRight.src = 'Images/playerRightFast.png'
+
+// Roof Img
+const roofImgTrue = new Image()
+roofImgTrue.src = 'Images/roof.png'
+const roofImgFalse = new Image()
+roofImgFalse.src = 'Images/roofOpacity20.png'
 
 // Creating the backGround Object
 const backGround = new Sprite({
@@ -157,7 +143,7 @@ const keys = {
 }
 
 let speedUp = false;
-const staticMaps = [backGround, ...boundaries,...apples, foreground, roof_img_false, roof_img_true]
+const staticMaps = [backGround, ...boundaries, foreground, roof_img_false, roof_img_true]
 
 function rectangularCollision ({object1, object2})
 {
@@ -173,10 +159,7 @@ function rectangularCollision ({object1, object2})
 function animate() {
     window.requestAnimationFrame(animate)
     backGround.draw();
-    boundaries.forEach(boundary => {  boundary.draw();});
-    apples.forEach(apple_item => {
-        c.drawImage(apple, apple_item.position.x, apple_item.position.y)
-    });
+    boundaries.forEach(boundary => {  boundary.draw() })
     player.draw();
     foreground.draw();
     if (backGround.position.x < -2900 && backGround.position.y > -250)
@@ -185,8 +168,7 @@ function animate() {
     }
     else {roof_img_true.draw();}
     navigate();
-    console.log('player');
-    console.log(player.position);
+    console.log(backGround.position)    
     
 }
 animate()

@@ -1,2 +1,2 @@
 -- SQLite
-.schema
+DELETE FROM users WHERE username = 'java';

@@ -67,19 +67,20 @@ def login():
             elif not request.form.get("password"):
                 return apology("must provide password", 400)
 
+            # Assign Values
             username = request.form.get("username")
             password = request.form.get("password")
+
             # Query database for username
             rows = db.execute("SELECT * FROM users WHERE username = (?)", (username,),).fetchall()
-
             # Ensure username exists and password is correct
-            if len(rows) != 1 or not check_password_hash(rows[0]["hash"], (password,),).fetchall():
+            if len(rows) != 1 or not check_password_hash(rows[0][2], (password)):
                 return apology("Invalid Username and/or Password", 400)
 
             # Remember which user has logged in
-            session["user_id"] = rows[0]["id"]
-
-            db.close()
+            session["user_id"] = rows[0][0]
+            game_db.commit()
+            game_db.close()
             # Redirect user to the game
             return redirect("/gameOn")
         
@@ -126,9 +127,9 @@ def register():
             rows = db.execute("SELECT * FROM users WHERE username = ?", (username,),).fetchall()
 
             # Ensuring data was successfully saved and loggin the user in
-            if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
+            if len(rows) != 1 or not check_password_hash(rows[0][2], password):
                 return apology("something went wrong", 400)
-            session["user_id"] = rows[0]["id"]
+            session["user_id"] = rows[0][0]
 
             db.close()
             # Redirect user to home page
@@ -137,3 +138,8 @@ def register():
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("register.html")
+
+# ----------------------------------------------------------------REGISTER-------------------------------
+@app.route("/play")
+def play():
+    return render_template("gameOn.html")

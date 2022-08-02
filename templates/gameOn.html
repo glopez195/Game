@@ -1,21 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    
-    <title>Game</title>
-</head>
-    
-</body>
-</html>
 {% extends "layout.html" %}
 {% block title %}
 Play
 {% endblock %}
 
 {% block main %}
+
+    <script src="/static/collision.js"></script>
+    <script src="/static/classes.js"></script>
     <div style="display:flex;justify-content:center;">
         <canvas></canvas>
-        <script src="index.js"></script>
+        <script src="/static/index.js"></script>
     </div>
 {% endblock %}
