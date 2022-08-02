@@ -6,12 +6,14 @@ canvas.height = 720;
 
 const MAP_TILES_WIDTH = 60;
 
-const map_tiles = []
-for (let i = 0; i < collisions_map.length; i += MAP_TILES_WIDTH) {
-    map_tiles
-.push(collisions_map.slice(i, MAP_TILES_WIDTH + i))
+const collision_map = []
+for (let i = 0; i < collisions.length; i += MAP_TILES_WIDTH) {
+    collision_map.push(collisions.slice(i, MAP_TILES_WIDTH + i))
 }
-
+const apples_map = []
+for (let i = 0; i < apples_json.length; i += MAP_TILES_WIDTH) {
+    apples_map.push(apples_json.slice(i, MAP_TILES_WIDTH + i))
+}
 const offset = {
     x: -2000,
     y: -2000
@@ -19,53 +21,37 @@ const offset = {
 const boundaries = [];
 const apples = [];
 
-map_tiles.forEach((row, i) => {
+collision_map.forEach((row, i) => {
     row.forEach((symbol, j) => {
-        if (symbol != 0)
+        if (symbol == 1359)
         {
             boundaries.push(
                 new Boundary({
                     position: {
                         x: j * Boundary.width + offset.x,
                         y: i * Boundary.height + offset.y
-                    }
+                    },
+                    color: 'rgba(255, 0, 0, 0)'
                 }))
         }
     })
 })
+apples_map.forEach((row, i) => {
+    row.forEach((symbol, j) => {
+        if (symbol == 1360)
+        {
+            apples.push({
+                position: {
+                    x: j * Boundary.width + offset.x, 
+                    y: i * Boundary.height + offset.y
+                },
+                height: apple.height,
+                width: apple.width
+            })
+        }
+    })
+})
 
-// Map Img
-const mapImg = new Image();
-mapImg.src = '/Images/map.png';
-
-// Foreground Img
-const foregroundImg = new Image();
-foregroundImg.src = '/Images/overlayer.png';
-
-
-// Player Img
-const playerDownImg = new Image()
-playerDownImg.src = 'Images/playerDown.png'
-const playerUpImg = new Image()
-playerUpImg.src = 'Images/playerUp.png'
-const playerLeftImg = new Image()
-playerLeftImg.src = 'Images/playerLeft.png'
-const playerRightImg = new Image()
-playerRightImg.src = 'Images/playerRight.png'
-const playerFastDown = new Image()
-playerFastDown.src = 'Images/playerDownFast.png'
-const playerFastUp = new Image()
-playerFastUp.src = 'Images/playerUpFast.png'
-const playerFastLeft = new Image()
-playerFastLeft.src = 'Images/playerLeftFast.png'
-const playerFastRight = new Image()
-playerFastRight.src = 'Images/playerRightFast.png'
-
-// Roof Img
-const roofImgTrue = new Image()
-roofImgTrue.src = 'Images/roof.png'
-const roofImgFalse = new Image()
-roofImgFalse.src = 'Images/roofOpacity20.png'
 
 // Creating the backGround Object
 const backGround = new Sprite({
@@ -143,7 +129,7 @@ const keys = {
 }
 
 let speedUp = false;
-const staticMaps = [backGround, ...boundaries, foreground, roof_img_false, roof_img_true]
+const staticMaps = [backGround, ...boundaries,...apples, foreground, roof_img_false, roof_img_true]
 
 function rectangularCollision ({object1, object2})
 {
@@ -159,7 +145,10 @@ function rectangularCollision ({object1, object2})
 function animate() {
     window.requestAnimationFrame(animate)
     backGround.draw();
-    boundaries.forEach(boundary => {  boundary.draw() })
+    boundaries.forEach(boundary => {  boundary.draw();});
+    apples.forEach(apple_item => {
+        c.drawImage(apple, apple_item.position.x, apple_item.position.y)
+    });
     player.draw();
     foreground.draw();
     if (backGround.position.x < -2900 && backGround.position.y > -250)
@@ -167,8 +156,7 @@ function animate() {
         roof_img_false.draw();
     }
     else {roof_img_true.draw();}
-    navigate();
-    console.log(backGround.position)    
+    navigate();   
     
 }
 animate()
@@ -253,6 +241,23 @@ function navigate()
             }
 
         }
+        for (let i = 0; i < apples.length; i++)
+        {
+            const apple_item = apples[i]
+            if(rectangularCollision({
+                object1:player,
+                object2: {
+                    ...apple_item,
+                    position:{
+                        x: apple_item.position.x,
+                        y: apple_item.position.y
+                    }
+                }
+            })) {
+                interact(apple_item)
+                break
+            }
+        }
         if (moving){
             staticMaps.forEach((movable)=> {
                 movable.position.y += player.velocity 
@@ -289,6 +294,23 @@ function navigate()
                 break
             }
 
+        }
+        for (let i = 0; i < apples.length; i++)
+        {
+            const apple_item = apples[i]
+            if(rectangularCollision({
+                object1:player,
+                object2: {
+                    ...apple_item,
+                    position:{
+                        x: apple_item.position.x,
+                        y: apple_item.position.y
+                    }
+                }
+            })) {
+                interact(apple_item)
+                break
+            }
         }
         if (moving){
             staticMaps.forEach((movable)=> {
@@ -327,6 +349,23 @@ function navigate()
             }
 
         }
+        for (let i = 0; i < apples.length; i++)
+        {
+            const apple_item = apples[i]
+            if(rectangularCollision({
+                object1:player,
+                object2: {
+                    ...apple_item,
+                    position:{
+                        x: apple_item.position.x,
+                        y: apple_item.position.y
+                    }
+                }
+            })) {
+                interact(apple_item)
+                break
+            }
+        }
         if (moving){
             staticMaps.forEach((movable) => {
                 movable.position.y -= player.velocity 
@@ -336,15 +375,15 @@ function navigate()
      if (keys.d.pressed && lastkey === 'd') {
         if (speedUp)
         {
-            player.moving = true
-            player.image = player.sprites.rightFast
-            player.velocity = 5
+            player.moving = true;
+            player.image = player.sprites.rightFast;
+            player.velocity = 5;
         }
         else
         {
-            player.velocity = 3
-            player.moving = true
-            player.image = player.sprites.right
+            player.velocity = 3;
+            player.moving = true;
+            player.image = player.sprites.right;
         }
         for (let i = 0; i < boundaries.length; i++)
         {
@@ -359,15 +398,37 @@ function navigate()
                     }
                 }
             })) {
-                moving = false
-                break
+                moving = false;
+                break;
             }
 
         }
+        for (let i = 0; i < apples.length; i++)
+        {
+            const apple_item = apples[i]
+            if(rectangularCollision({
+                object1:player,
+                object2: {
+                    ...apple_item,
+                    position:{
+                        x: apple_item.position.x,
+                        y: apple_item.position.y
+                    }
+                }
+            })) {
+                interact(apple_item);
+                break;
+            }
+        }
         if (moving){
             staticMaps.forEach((movable)=> {
-                movable.position.x -= player.velocity 
+                movable.position.x -= player.velocity;
             })
         }
     }
+}
+
+function interact(item)
+{
+    console.log("Cogela cabron");
 }

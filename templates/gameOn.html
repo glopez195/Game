@@ -1,14 +1,19 @@
-{% extends "layout.html" %}
-{% block title %}
-Play
-{% endblock %}
-
-{% block main %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/static/collision.js"></script>
     <script src="/static/classes.js"></script>
+    <link href="/static/favicon.ico" rel="icon">
+    <link href="/static/styles.css" rel="stylesheet">
+    <title>Play</title>
+</head>
+<body>
     <div style="display:flex;justify-content:center;">
-        <canvas></canvas>
+        <canvas style="width:960px;height: 540px;"></canvas>
         <script src="/static/index.js"></script>
     </div>
-{% endblock %}
+</body>
+</html>

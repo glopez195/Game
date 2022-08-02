@@ -61,11 +61,11 @@ def login():
 
             # Ensure username was submitted
             if not request.form.get("username"):
-                return apology("must provide username", 400)
+                return apology("Must Provide Username", 401)
 
             # Ensure password was submitted
             elif not request.form.get("password"):
-                return apology("must provide password", 400)
+                return apology("Must Provide Password", 401)
 
             # Assign Values
             username = request.form.get("username")
@@ -75,14 +75,13 @@ def login():
             rows = db.execute("SELECT * FROM users WHERE username = (?)", (username,),).fetchall()
             # Ensure username exists and password is correct
             if len(rows) != 1 or not check_password_hash(rows[0][2], (password)):
-                return apology("Invalid Username and/or Password", 400)
+                return apology("Invalid Username and/or Password", 401)
 
             # Remember which user has logged in
             session["user_id"] = rows[0][0]
             game_db.commit()
-            game_db.close()
             # Redirect user to the game
-            return redirect("/gameOn")
+            return redirect("/")
         
 
     # User reached route via GET (as by clicking a link or via redirect)
@@ -106,20 +105,20 @@ def register():
 
             # Ensure user types in a username
             if not username:
-                return apology("must provide username", 400)
+                return apology("Must Provide Username", 401)
             # Ensure user types in a password
             elif not password:
-                return apology("must provide password", 400)
+                return apology("Must Provide Password", 401)
             # Ensure user types in a confirmation
             elif not confirmation:
-                return apology("must provide confirmation", 400)
+                return apology("Must Provide Confirmation", 401)
             # Ensuring password and confirmation match
             elif password != confirmation:
-                return apology("confirmation must match password", 400)
+                return apology("Confirmation Must Match Password", 401)
 
             # Ensuring there is no usernames with that name already
             elif len(db.execute("SELECT * FROM users WHERE username = ?", (username,),).fetchall()) > 0:
-                return apology("This username already exists", 400)
+                return apology("This Username Already Exists", 401)
 
             # Inserting new user and password in the database
             query = "INSERT INTO users (username, hash) VALUES (?, ?)"
@@ -128,10 +127,9 @@ def register():
 
             # Ensuring data was successfully saved and loggin the user in
             if len(rows) != 1 or not check_password_hash(rows[0][2], password):
-                return apology("something went wrong", 400)
+                return apology("Something Went Wrong", 400)
             session["user_id"] = rows[0][0]
-
-            db.close()
+            game_db.commit()
             # Redirect user to home page
             return redirect("/")
 
@@ -139,7 +137,34 @@ def register():
     else:
         return render_template("register.html")
 
-# ----------------------------------------------------------------REGISTER-------------------------------
+# ----------------------------------------------------------------Play-------------------------------
 @app.route("/play")
+@login_required
 def play():
     return render_template("gameOn.html")
+
+# ----------------------------------------------------------------Logout-------------------------------
+@app.route("/logout")
+@login_required
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
+
+# ----------------------------------------------------------------Updates-------------------------------
+@app.route("/updates")
+@login_required
+def updates():
+    """Updates for the game"""
+    return render_template("updates.html")
+
+# ----------------------------------------------------------------About-------------------------------
+@app.route("/about")
+@login_required
+def about():
+    """About the game"""
+    return render_template("about.html")
