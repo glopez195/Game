@@ -1,2 +1,2 @@
 -- SQLite
-DELETE FROM users WHERE username = 'java';
+SELECT * FROM progress;

@@ -141,7 +141,10 @@ def register():
 @app.route("/play")
 @login_required
 def play():
-    return render_template("gameOn.html")
+    with sqlite3.connect('game.db') as game_db:
+        db = game_db.cursor()
+        
+        return render_template("gameOn.html")
 
 # ----------------------------------------------------------------Logout-------------------------------
 @app.route("/logout")
@@ -168,3 +171,23 @@ def updates():
 def about():
     """About the game"""
     return render_template("about.html")
+
+# ----------------------------------------------------------------Save Progress-------------------------------
+@app.route("/saveProgress", methods=["GET", "POST"])
+@login_required
+def saveProgress():
+    # User reached route via POST (as by submitting a form via POST)
+    if request.method == "POST":
+        with sqlite3.connect('game.db') as game_db:
+            db = game_db.cursor()
+            
+            # Assign Values
+            user_data = json.loads(request.form.get("user_data"))
+
+            # Save location in db
+            query = "UPDATE progress SET location_x = ?,location_y = ? WHERE progress_id = ?"
+            db.execute(query, (user_data['xLocation'], user_data['yLocation'], session['id']))
+            game_db.commit()
+
+    else:
+        return
