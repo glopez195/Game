@@ -1,3 +1,4 @@
+from email import message
 import os
 import json
 
@@ -143,8 +144,16 @@ def register():
 def play():
     with sqlite3.connect('game.db') as game_db:
         db = game_db.cursor()
-        
-        return render_template("gameOn.html")
+        row = db.execute("SELECT * FROM progress WHERE progress_id = ?", (session['user_id'],),).fetchall()
+        #user_data.append({'xLocation': row[0][1], 'yLocation': row[0][2], 'health': row[0][3], 'progress':row[0][4]})
+        user_data = {
+            'user_id': row[0][0],
+            'xLocation': row[0][1],
+            'yLocation': row[0][2],
+            'health': row[0][3],
+            'progress':row[0][4]
+        }
+        return render_template("gameOn.html", data=user_data)
 
 # ----------------------------------------------------------------Logout-------------------------------
 @app.route("/logout")
@@ -178,16 +187,19 @@ def about():
 def saveProgress():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
+        print('Progress => POST')
+        request_data = request.get_json()
+        print("request_data didnt passed")
+        if not request_data:
+            return
         with sqlite3.connect('game.db') as game_db:
             db = game_db.cursor()
-            
-            # Assign Values
-            user_data = json.loads(request.form.get("user_data"))
-
+    
             # Save location in db
             query = "UPDATE progress SET location_x = ?,location_y = ? WHERE progress_id = ?"
-            db.execute(query, (user_data['xLocation'], user_data['yLocation'], session['id']))
+            db.execute(query, (request_data['xLocation'], request_data['yLocation'], session['id']))
             game_db.commit()
 
     else:
+        print('Progress => GET')
         return

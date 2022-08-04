@@ -14,7 +14,7 @@
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"></script>
     <!-- https://favicon.io/emoji-favicons/money-bag/ -->
     <link href="/static/favicon.ico" rel="icon">
-
+    {% block header %}{% endblock %}
     <link href="/static/styles.css" rel="stylesheet">
     <title>GUI: {% block title %}{% endblock %}</title>
 
@@ -22,7 +22,7 @@
 
 <body>
 
-    <nav class="bg-light border navbar navbar-expand-md navbar-light">
+    <nav id="menu_" class="bg-light border navbar navbar-expand-md navbar-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><span id="g_world">G's World</span></a>
             <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
@@ -57,7 +57,7 @@
     </header>
     {% endif %}
 
-    <main class="container-fluid py-5 text-center">
+    <main id="main_body" class="container-fluid py-5 text-center">
         {% block main %}{% endblock %}
     </main>
 

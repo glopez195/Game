@@ -338,6 +338,7 @@ function drawRoof() {
 function willCrash(direction) {
     let xDirection = 0;
     let yDirection = 0;
+    if (keys.d.pressed && keys.a.pressed || keys.w.pressed && keys.s.pressed) { return true; }
     switch (direction) {
         case 'up':
             yDirection = player.velocity;
@@ -389,10 +390,8 @@ function adjustSpeed()
 
 // Save progress in case of window closing 
 window.addEventListener("unload", function(){
-    console.log("left the page");
     let user_data = {   "xLocation" : backGround.position.x,
                         "yLocation" : backGround.position.y
                     }
-    let user_data_jsoned = JSON.stringify(user_data);
-    navigator.sendBeacon("/saveProgress", user_data_jsoned);
+    navigator.sendBeacon('/saveProgress', JSON.stringify(user_data));
 })
