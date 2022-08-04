@@ -1,38 +1,3 @@
-// Map Img
-const mapImg = new Image();
-mapImg.src = '/static/images/map.png';
-
-// Foreground Img
-const foregroundImg = new Image();
-foregroundImg.src = '/static/images/overlayer.png';
-
-const apple = new Image();
-apple.src = '/static/images/apple.png';
-
-// Player Img
-const playerDownImg = new Image();
-playerDownImg.src = '/static/images/playerDown.png';
-const playerUpImg = new Image();
-playerUpImg.src = '/static/images/playerUp.png';
-const playerLeftImg = new Image();
-playerLeftImg.src = '/static/images/playerLeft.png';
-const playerRightImg = new Image();
-playerRightImg.src = '/static/images/playerRight.png';
-const playerFastDown = new Image();
-playerFastDown.src = '/static/images/playerDownFast.png';
-const playerFastUp = new Image();
-playerFastUp.src = '/static/images/playerUpFast.png';
-const playerFastLeft = new Image();
-playerFastLeft.src = '/static/images/playerLeftFast.png';
-const playerFastRight = new Image();
-playerFastRight.src = '/static/images/playerRightFast.png';
-
-// Roof Img
-const roofImgTrue = new Image();
-roofImgTrue.src = '/static/images/roof.png';
-const roofImgFalse = new Image();
-roofImgFalse.src = '/static/images/roofOpacity20.png';
-
 const collisions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

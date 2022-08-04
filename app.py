@@ -140,18 +140,22 @@ def register():
 @app.route("/play")
 @login_required
 def play():
+        return render_template("gameOn.html")
+
+# ----------------------------------------------------------------Initialize Game-------------------------------
+@app.route("/getStats")
+@login_required
+def getStats():
     with sqlite3.connect('game.db') as game_db:
         db = game_db.cursor()
         row = db.execute("SELECT * FROM progress WHERE progress_id = ?", (session['user_id'],),).fetchall()
-        #user_data.append({'xLocation': row[0][1], 'yLocation': row[0][2], 'health': row[0][3], 'progress':row[0][4]})
         user_data = {
-            'user_id': row[0][0],
             'xLocation': row[0][1],
             'yLocation': row[0][2],
             'health': row[0][3],
             'progress':row[0][4]
         }
-        return render_template("gameOn.html", data=user_data)
+        return jsonify(user_data)
 
 # ----------------------------------------------------------------Logout-------------------------------
 @app.route("/logout")
@@ -188,9 +192,7 @@ def saveProgress():
         print('Progress => POST')
         request_data = request.get_data()
         json_string = str(request_data)
-        user_data = json.loads(json_string[2:-1])  
-        print("request_data passed")
-        print(user_data)
+        user_data = json.loads(json_string[2:-1])
         with sqlite3.connect('game.db') as game_db:
             db = game_db.cursor()
             # Save location in db

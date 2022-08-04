@@ -1,17 +1,12 @@
 {% extends "layout.html" %}
 
-{% block header %}
-    <script src="/static/collision.js"></script>
-    <script src="/static/classes.js"></script>
-    <link href="/static/favicon.ico" rel="icon">
-    <link href="/static/styles.css" rel="stylesheet">
-{% endblock %}
-
 {% block title %}
 Play
 {% endblock %}
 
 {% block main %}
+    <img id="map" class="images" hidden="true">
+    <img id="foreground" class="images" hidden="true">
     <script>
         document.getElementById('menu_').hidden = true;
         document.getElementById('main_body').classList.remove('py-5');
@@ -19,27 +14,5 @@ Play
     <div style="display:flex;justify-content:center;padding: 5px 0;">
         <canvas style="width:960px;height: 540px;"></canvas>
         <script src="/static/index.js"></script>
-    </div>
-    <div>
-        <table class="table table-dark table-striped">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">x</th>
-                <th scope="col">y</th>
-                <th scope="col">health</th>
-                <th scope="col">progress</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{{data.user_id}}</td>
-                <td>{{data.xLocation}}</td>
-                <td>{{data.yLocation}}</td>
-                <td>{{data.health}}</td>
-                <td>{{data.progress}}</td>
-              </tr>
-            </tbody>
-          </table>
     </div>
 {% endblock %}
