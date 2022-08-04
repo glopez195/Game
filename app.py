@@ -125,11 +125,9 @@ def register():
             query = "INSERT INTO users (username, hash) VALUES (?, ?)"
             db.execute(query, (username, generate_password_hash(password)))
             rows = db.execute("SELECT * FROM users WHERE username = ?", (username,),).fetchall()
-
-            # Ensuring data was successfully saved and loggin the user in
-            if len(rows) != 1 or not check_password_hash(rows[0][2], password):
-                return apology("Something Went Wrong", 400)
+            query = "INSERT INTO progress (progress_id, location_x, location_y, health, progress) VALUES (?, ?, ?, ?, ?)"
             session["user_id"] = rows[0][0]
+            db.execute(query, (session['user_id'], -2000, -2000, 100, 0))
             game_db.commit()
             # Redirect user to home page
             return redirect("/")
@@ -188,18 +186,19 @@ def saveProgress():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         print('Progress => POST')
-        request_data = request.get_json()
-        print("request_data didnt passed")
-        if not request_data:
-            return
+        request_data = request.get_data()
+        json_string = str(request_data)
+        user_data = json.loads(json_string[2:-1])  
+        print("request_data passed")
+        print(user_data)
         with sqlite3.connect('game.db') as game_db:
             db = game_db.cursor()
-    
             # Save location in db
             query = "UPDATE progress SET location_x = ?,location_y = ? WHERE progress_id = ?"
-            db.execute(query, (request_data['xLocation'], request_data['yLocation'], session['id']))
+            db.execute(query, (user_data['xLocation'], user_data['yLocation'], session['user_id']))
             game_db.commit()
+            return ('',200)
 
     else:
         print('Progress => GET')
-        return
+        return ('',200)
