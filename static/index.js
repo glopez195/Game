@@ -6,45 +6,33 @@ const c = canvas.getContext('2d');
 canvas.width = 1280;
 canvas.height = 720;
 
-let all_images = []
-
 // Map Img
-const mapImg = document.getElementById('map');
+const mapImg = new Image();
 mapImg.src="/static/images/map.png";
 
 // Foreground Img
-const foregroundImg = document.getElementById('foreground');
+const foregroundImg = new Image();
 foregroundImg.src = '/static/images/overlayer.png';
-
 
 const apple = new Image();
 apple.src = '/static/images/apple.png';
-all_images.push(apple);
 // Player Img
 const playerDownImg = new Image();
 playerDownImg.src = '/static/images/playerDown.png';
-all_images.push(playerDownImg);
 const playerUpImg = new Image();
 playerUpImg.src = '/static/images/playerUp.png';
-all_images.push(playerUpImg);
 const playerLeftImg = new Image();
 playerLeftImg.src = '/static/images/playerLeft.png';
-all_images.push(playerLeftImg);
 const playerRightImg = new Image();
 playerRightImg.src = '/static/images/playerRight.png';
-all_images.push(playerRightImg);
 const playerFastDown = new Image();
 playerFastDown.src = '/static/images/playerDownFast.png';
-all_images.push(playerFastDown);
 const playerFastUp = new Image();
 playerFastUp.src = '/static/images/playerUpFast.png';
-all_images.push(playerFastUp);
 const playerFastLeft = new Image();
 playerFastLeft.src = '/static/images/playerLeftFast.png';
-all_images.push(playerFastLeft);
 const playerFastRight = new Image();
 playerFastRight.src = '/static/images/playerRightFast.png';
-all_images.push(playerFastRight);
 
 // Roof Img
 const roofImgTrue = new Image();
@@ -449,32 +437,4 @@ async function gameStarts() {
         }
     }
 }
-
-function loadAllImages() {
-    const myNodeList = document.getElementsByClassName("images");
-    loadAll = new Uint8Array(myNodeList.length);
-    let allLoaded = false;
-    window.addEventListener("load", event => {
-        while (!allLoaded) {
-            for (let i = 0; i < myNodeList.length; i++) {
-                var image = myNodeList[i];
-                var isLoaded = image.complete && image.naturalHeight !== 0;
-                loadAll[i] = isLoaded;
-            }
-            allLoaded = true;
-            for (loadOne in loadAll)
-            {
-                console.log('loading:' + loadOne);
-                if (!loadOne)
-                {
-                    allLoaded = false;
-                    break;
-                }
-            }
-        }
-        console.log('allLoaded');
-        gameStarts();
-    });
-    
-}
-loadAllImages();
+gameStarts();
