@@ -183,6 +183,13 @@ def about():
     """About the game"""
     return render_template("about.html")
 
+# ----------------------------------------------------------------Credits-------------------------------
+@app.route("/credits")
+@login_required
+def credits():
+    """About the game"""
+    return render_template("credits.html")
+
 # ----------------------------------------------------------------Save Progress-------------------------------
 @app.route("/saveProgress", methods=["GET", "POST"])
 @login_required

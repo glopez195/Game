@@ -1,12 +1,12 @@
 @font-face { font-family: gideon-roman; src: url('/static/GideonRoman-Regular.ttf'); }
 
 body {
-    background-color:white;
+    background-color:rgb(27, 26, 32);
     font-family:gideon-roman, sans-serif; 
     font-weight: bold;
 }
 
-#g_world {
+.g_world {
     color:#4588ba;
 }
 
