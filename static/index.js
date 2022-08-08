@@ -68,8 +68,8 @@ const collision_symbol = 1359;
 const MAP_TILES_WIDTH = 60;
 
 const offset = {
-    x: -2000,
-    y: -2000
+    x: -1700,
+    y: -1700
 }
 
 // Adding boudaries objects to the coordenates of the collision array
@@ -138,7 +138,7 @@ const player = new Player({
         max: 5,
         animation_speed: idle_animation_speed
     },
-    moving:false,
+    moving: false,
     velocity: runnin_speed,
     sprites: {
         down: playerDownImg,
@@ -173,8 +173,12 @@ const shrine = new Sprite({
 const none_staticMaps = [backGround, foreground, roof_img_false, roof_img_true];
 let staticMaps = [];
 
+window.addEventListener("load", ()=> {
+    loading();
+})
+
+
 async function gameStarts() {
-    console.log("Game is starting")
     // Save progress in case of window closing 
     window.addEventListener("unload", function () {
         let user_data = {
@@ -188,10 +192,10 @@ async function gameStarts() {
     let stats = await response.json();
 
     shrine.position.x += stats.xLocation;
-    shrine.position.y += stats.yLocation; 
-    none_staticMaps.forEach(movable =>{
+    shrine.position.y += stats.yLocation;
+    none_staticMaps.forEach(movable => {
         movable.position.x = stats.xLocation;
-        movable.position.y = stats.yLocation; 
+        movable.position.y = stats.yLocation;
     })
 
     collision_map.forEach((row, i) => {
@@ -228,7 +232,6 @@ async function gameStarts() {
     //    ----------------------Main refreshing function ---------------------------
     function animate() {
         window.requestAnimationFrame(animate)
-
         // Draw background
         backGround.draw();
 
@@ -254,11 +257,12 @@ async function gameStarts() {
 
         // Takes input to navigate the player through the map
         if (!player.moving) navigate();
-        console.log(player.moving);
-        console.log(pressedKeys);
-        if(pressedKeys < 0) pressedKeys = 0;
+        if (pressedKeys < 0) pressedKeys = 0;
 
-    } animate()
+    }
+    setTimeout(() => {
+        animate();
+    }, 3000);
 }
 //    Assinging initial values to the keys
 const keys = {
@@ -282,7 +286,7 @@ const keys = {
 // Checks for collision of two rectangles given the initial position, width and height
 function rectangularCollision({ player1, object2 }) {
     let xPos = player1.position.x + 35;
-    let pWidth = player1.width - 70; 
+    let pWidth = player1.width - 70;
     let pHeight = player1.height - 20;
     return (
         xPos + pWidth >= object2.position.x &&
@@ -310,7 +314,7 @@ window.addEventListener('keydown', (e) => {
             keys.d.pressed = true;
             break
         case 'q':
-            if (player.moving)return;
+            if (player.moving) return;
             player.moving = true;
             PlayerAttack();
             break
@@ -322,7 +326,8 @@ window.addEventListener('keyup', (e) => {
         case 'w':
             pressedKeys--;
             keys.w.pressed = false;
-            if (pressedKeys===0 && !player.moving){
+            if (pressedKeys === 0 && !player.moving) {
+                player.frames.val = 0;
                 player.image = player.sprites.upIdle;
                 player.frames.max = 5;
                 player.frames.animation_speed = 12;
@@ -331,25 +336,28 @@ window.addEventListener('keyup', (e) => {
         case 'a':
             pressedKeys--;
             keys.a.pressed = false;
-            if (pressedKeys===0 && !player.moving){
-            player.image = player.sprites.leftIdle;
-            player.frames.max = 5;
-            player.frames.animation_speed = 12;
+            if (pressedKeys === 0 && !player.moving) {
+                player.frames.val = 0;
+                player.image = player.sprites.leftIdle;
+                player.frames.max = 5;
+                player.frames.animation_speed = 12;
             }
             break
         case 's':
             pressedKeys--;
             keys.s.pressed = false;
-            if (pressedKeys===0 && !player.moving){
-            player.image = player.sprites.downIdle;
-            player.frames.max = 5;
-            player.frames.animation_speed = 12;
+            if (pressedKeys === 0 && !player.moving) {
+                player.frames.val = 0;
+                player.image = player.sprites.downIdle;
+                player.frames.max = 5;
+                player.frames.animation_speed = 12;
             }
             break
         case 'd':
             pressedKeys--;
             keys.d.pressed = false;
-            if (pressedKeys===0 && !player.moving){
+            if (pressedKeys === 0 && !player.moving) {
+                player.frames.val = 0;
                 player.image = player.sprites.rightIdle;
                 player.frames.max = 5;
                 player.frames.animation_speed = 12;
@@ -484,31 +492,57 @@ function adjustSpeed() {
     else { player.velocity = runnin_speed; }
 }
 
-function PlayerAttack()
-{
+function PlayerAttack() {
     player.frames.animation_speed = 8;
     player.frames.max = 6;
     player.frames.val = 0;
-    switch (lastKey) 
-        {
-            case 's':
-                player.frames.lastSprite = player.sprites.downIdle;
-                player.image = player.sprites.downAttack;
-                break;
-            case 'w':
-                player.frames.lastSprite = player.sprites.upIdle;
-                player.image = player.sprites.upAttack;
-                break;
-            case 'd':
-                player.frames.lastSprite = player.sprites.rightIdle;
-                player.image = player.sprites.rightAttack;
-                break;
-            case 'a':
-                player.frames.lastSprite = player.sprites.leftIdle;
-                player.image = player.sprites.leftAttack;
-                break;
-        }
+    switch (lastKey) {
+        case 's':
+            player.frames.lastSprite = player.sprites.downIdle;
+            player.image = player.sprites.downAttack;
+            break;
+        case 'w':
+            player.frames.lastSprite = player.sprites.upIdle;
+            player.image = player.sprites.upAttack;
+            break;
+        case 'd':
+            player.frames.lastSprite = player.sprites.rightIdle;
+            player.image = player.sprites.rightAttack;
+            break;
+        case 'a':
+            player.frames.lastSprite = player.sprites.leftIdle;
+            player.image = player.sprites.leftAttack;
+            break;
+    }
 }
 
 gameStarts();
 
+function loading() {
+    const loader = document.getElementById('loader_main');
+    const main = document.getElementById('canvas');
+    const bar = document.getElementById('barra_de_carga');
+
+    setTimeout(() => {
+        loader.style.opacity = 0;
+        loader.style.display = 'none';
+
+        main.style.display = 'flex';
+        setTimeout(() => {
+            main.style.opacity = 1
+        }, 50);
+    }, 3000);
+    let progress = 0;
+    let random = 0;
+    var run = setInterval(frames, 300);
+    function frames() {
+        random = Math.random() * 30;
+        progress += random;
+        if (progress > 100) {
+            progress = 100;
+            clearInterval(run);
+        }
+        bar.style.width = progress.toFixed(2) + '%';
+        bar.innerHTML = progress.toFixed(2) + '%';
+    }
+}

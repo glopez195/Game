@@ -3,66 +3,136 @@
 Updates
 {% endblock %}
 {% block main %}
+<script>
+    document.getElementById('contenedor').style.height='2000';
+</script>
+
 <div class="main">
-    <h1 class="g_world">Updates</h1>
-    <div class="container">
-        <div class="row" style="margin:0 20px;height:100px;">
-            <div class="col-2">
-                <div id="list-example" class="list-group">
-                    <a class="list-group-item list-group-item-action" href="#list-item-1">Item 1</a>
-                    <a class="list-group-item list-group-item-action" href="#list-item-2">Item 2</a>
-                    <a class="list-group-item list-group-item-action" href="#list-item-3">Item 3</a>
-                    <a class="list-group-item list-group-item-action" href="#list-item-4">Item 4</a>
-                </div>
+    <h1 class="g_world display-1">Updates</h1>
+
+    <!--         Aug 8th, 2022                       -->
+    <div class="update_wraper">
+        <div class="update">
+            <div class="update_date">Aug 8th, 2022</div>
+            <div class="update_title">The biggest so far!</div>
+            <div class="update_capsule">
+                <ul class="update_list">
+                    <li class="update_list_item">Changed the character sprite and added attack animations.</li>
+                    <li class="update_list_item">Added the loading screen for the game and some ease-in animations to improve user experience.</li>
+                    <li class="update_list_item">Fixed: Bugs where collision with objects was making impossible reaching certain areas of the map.</li>
+                </ul>
             </div>
-            <div class="col-8">
-                <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true"
-                    class="scrollspy-example" tabindex="0">
-                    <h4 id="list-item-1">Item 1</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam volutpat varius arcu vitae blandit.
-                        Nunc egestas, ex non pretium iaculis, diam turpis laoreet dolor, vitae cursus nunc elit a
-                        ligula. Nullam elit eros, auctor vel sodales condimentum, lobortis vel velit. Donec dignissim
-                        eros velit, in imperdiet diam pharetra vel. Mauris mollis, odio non auctor fringilla, metus
-                        augue feugiat neque, in tempus nisi nisi a sem. Etiam non felis sit amet ex sodales
-                        sollicitudin. Phasellus justo leo, lobortis et nibh eget, pellentesque eleifend est. Nam
-                        tincidunt neque vel pharetra ornare. Vestibulum semper urna eget sapien iaculis placerat.
-                        Maecenas id erat non risus accumsan rhoncus et quis mi. Nulla congue orci at neque laoreet,
-                        vitae vehicula libero dapibus. Morbi finibus ex feugiat arcu interdum, sed malesuada ex
-                        interdum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis
-                        egestas. Proin malesuada ante vel convallis porttitor. Aliquam non varius elit. Nullam rutrum
-                        metus sem, vel luctus mauris placerat porta.</p>
-                    <h4 id="list-item-2">Item 2</h4>
-                    <p>Aliquam mi sapien, porta et nisl ut, dignissim viverra velit. Duis non orci ut metus dignissim
-                        tempus nec sit amet lectus. Sed rutrum tellus tortor, et finibus odio commodo vitae. Etiam
-                        bibendum leo in purus aliquet, a luctus ante fermentum. Donec sapien nulla, tincidunt non mi
-                        vel, tristique ornare nisl. Nam placerat vestibulum imperdiet. Vivamus nunc lacus, tempor
-                        efficitur maximus in, venenatis at sapien. Donec laoreet massa elit, ac molestie nibh molestie
-                        eu. Aliquam vitae lacinia erat. Donec nibh lectus, rhoncus in blandit at, dapibus eget ante.
-                        Duis sed odio eros. Praesent varius libero nunc, sed convallis arcu vehicula eget. Pellentesque
-                        arcu lorem, ullamcorper vel massa ut, ornare commodo ligula. In iaculis magna at metus laoreet,
-                        at lacinia est suscipit. Praesent luctus, orci id efficitur tempor, risus lacus cursus elit,
-                        interdum tincidunt felis massa eu lorem. Maecenas facilisis nisl odio, vel elementum diam tempor
-                        sit amet.</p>
-                    <h4 id="list-item-3">Item 3</h4>
-                    <p>Phasellus sed quam sit amet odio molestie tempus sit amet sit amet mi. Phasellus feugiat, metus
-                        non vestibulum feugiat, elit erat gravida erat, nec consectetur ipsum nulla et enim. Donec
-                        faucibus pretium sollicitudin. Vestibulum posuere elit in accumsan ullamcorper. Cras in nisl
-                        eleifend, iaculis mauris id, elementum odio. Aliquam lacinia tincidunt ligula eu egestas. Nullam
-                        sit amet nisl tellus.</p>
-                    <h4 id="list-item-4">Item 4</h4>
-                    <p>Nullam velit quam, malesuada eget nibh vel, rhoncus venenatis enim. Cras vehicula ut sapien ut
-                        molestie. Donec vitae odio imperdiet odio tincidunt feugiat nec sit amet lacus. Donec quis
-                        ullamcorper ligula. Vivamus lacinia consequat tincidunt. Phasellus a aliquam orci. Donec
-                        suscipit feugiat augue, id pharetra purus fringilla a. Pellentesque sed purus velit. Vivamus
-                        tristique varius lacinia. Quisque pellentesque dapibus urna eget eleifend. Nam viverra rutrum
-                        lorem, id consectetur urna mollis id. Cras elementum arcu ac vulputate consequat.</p>
-                </div>
+        </div>
+    </div>
+
+    <!--         Aug 6th, 2022                       -->
+    <div class="update_wraper">
+        <div class="update">
+            <div class="update_date">Aug 6th, 2022</div>
+            <div class="update_title">Backend</div>
+            <div class="update_capsule">
+                <ul class="update_list">
+                    <li class="update_list_item">Reworked ways to save data and load it from the database once the game starts.</li>
+                    <li class="update_list_item">Fixed: Bugs where player was showing on top of objects while walking behind them.</li>
+                </ul>
             </div>
-            <footer class="mb-5 small text-center text-muted">
-                <p>
-                    &#169; 2022 Guillermo Lopez. All rights reserved.
-                </p>
-            </footer>
+        </div>
+    </div>
+
+    <!--         Aug 4th, 2022                       -->
+    <div class="update_wraper">
+        <div class="update">
+            <div class="update_date">Aug 4th, 2022</div>
+            <div class="update_title">Solving bugs</div>
+            <div class="update_capsule">
+                <ul class="update_list">
+                    <li class="update_list_item">Fixed: Bugs where the images weren't loading resulting in no map or no player.</li>
+                    <li class="update_list_item">Fixed: Bugs where some information was not arriving completaly to the database.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!--         Aug 3th, 2022                       -->
+    <div class="update_wraper">
+        <div class="update">
+            <div class="update_date">Aug 3th, 2022</div>
+            <div class="update_title">Database Baby!</div>
+            <div class="update_capsule">
+                <ul class="update_list">
+                    <li class="update_list_item">Created a progress mecanism to save user data.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!--         Aug 2nd, 2022                       -->
+    <div class="update_wraper">
+        <div class="update">
+            <div class="update_date">Aug 2nd, 2022</div>
+            <div class="update_title">Database Baby!</div>
+            <div class="update_capsule">
+                <ul class="update_list">
+                    <li class="update_list_item">Created the Backend part of the game where now user can register for an account and login or out.</li>
+                    <li class="update_list_item">Welcome Python to G's World!!.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!--         Aug 1st, 2022                       -->
+    <div class="update_wraper">
+        <div class="update">
+            <div class="update_date">Aug 1st, 2022</div>
+            <div class="update_title">Polishing the world!</div>
+            <div class="update_capsule">
+                <ul class="update_list">
+                    <li class="update_list_item">Fixed: Bugs where player's animations weren't displaying correctly.</li>
+                    <li class="update_list_item">Added apples all over the map. Why? Who knows perhaps for lunch later.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!--         July 31st, 2022                       -->
+    <div class="update_wraper">
+        <div class="update">
+            <div class="update_date">July 31st, 2022</div>
+            <div class="update_title">First Commit!</div>
+            <div class="update_capsule">
+                <ul class="update_list">
+                    <li class="update_list_item">Uploaded project to Github for better saving of the work.</li>
+                    <li class="update_list_item">Fixed: Bugs where player would get stuck when walking by certain objects.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!--         July 29th, 2022                       -->
+    <div class="update_wraper">
+        <div class="update">
+            <div class="update_date">July 29th, 2022</div>
+            <div class="update_title">Pixels everywhere!</div>
+            <div class="update_capsule">
+                <ul class="update_list">
+                    <li class="update_list_item">Implementing collisions and user imput for moving the character.</li>
+                    <li class="update_list_item">Added new stuff to the map.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!--         July 26th, 2022                       -->
+    <div class="update_wraper">
+        <div class="update">
+            <div class="update_date">July 29th, 2022</div>
+            <div class="update_title">Day 1</div>
+            <div class="update_capsule">
+                <ul class="update_list">
+                    <li class="update_list_item">Created the map for the game.</li>
+                    <li class="update_list_item">Downloaded content to implement player clases and enemies.</li>
+                </ul>
+            </div>
         </div>
     </div>
 

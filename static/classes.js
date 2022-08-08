@@ -81,10 +81,12 @@ class Player {
             if (this.frames.val < this.frames.max - 1) this.frames.val++;
             else if(this.moving === true) 
             {   
-                this.moving = false;
                 player.frames.animation_speed = 12;
                 this.image = this.frames.lastSprite;
                 player.frames.max = 5;
+                this.frames.val = 0;
+                this.moving = false;
+                
             }
             else this.frames.val = 0;
         }

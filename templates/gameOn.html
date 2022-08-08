@@ -5,12 +5,23 @@ Play
 {% endblock %}
 
 {% block main %}
-    <script>
-        document.getElementById('menu_').hidden = true;
-        document.getElementById('main_body').classList.remove('py-5');
-    </script>
-    <div style="display:flex;justify-content:center;padding: 5px 0;">
-        <canvas style="width:960px;height: 540px;"></canvas>
-        <script src="/static/index.js"></script>
+<script>
+    document.body.style.background = 'black';
+    document.getElementById('menu_').hidden = true;
+    document.getElementById('contenedor').hidden = true;
+    document.getElementById('main_body').classList.remove('py-5');
+</script>
+<div id="loader_main" style="width: 100%;display: flex;padding: 5px 0;justify-content: center;">
+    <div style="align-items:center; justify-content:center;display: flex;flex-direction: column; height: 720px;width:1280px;">
+        <span class="loader">Loading...</span>
+        <div class="progress" style="width:500px;height: 30px;">
+            <div id="barra_de_carga" class="progress-bar" role="progressbar" style="background-color:#4588ba;color: white; font-size: 20px;height: 30px;" aria-valuemin="0" aria-valuemax="100">0%
+            </div>
+        </div>
     </div>
+</div>
+<div id="canvas" style="justify-content:center;padding: 5px 0;">
+    <canvas style="background-color: white;"></canvas>
+</div>
+<script defer src="/static/index.js"></script>
 {% endblock %}
