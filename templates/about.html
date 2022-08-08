@@ -4,7 +4,49 @@ About
 {% endblock %}
 
 {% block main %}
-    <div class="main" style="height: 500px;">
-        <h1 class="g_world display-1">About</h1>
+<div class="main" style="display: flex;flex-direction: column; align-items: center;">
+    <h1 class="g_world display-1">About</h1>
+    <div
+        style="margin:5vw 0 5vw 0;padding:5vw;width:70%;border-radius: 15px ;font-size: x-large;color:whitesmoke;background-color: rgb(11, 11, 11, 0.8);">
+        <style>
+            a:link {
+                color: rgb(180, 40, 131);
+                background-color: transparent;
+            }
+
+            a:visited {
+                color: rgb(180, 40, 131);
+                background-color: transparent;
+            }
+
+            a:hover {
+                color: red;
+                background-color: transparent;
+                text-decoration: underline;
+            }
+
+            a:active {
+                color: rgb(255, 255, 219);
+                background-color: transparent;
+                text-decoration: underline;
+            }
+        </style>
+        <p><span class="inside_p" style="color:#4588ba">G's World</span> is a Final Proyect I am currently working on for the <a
+                href="https://cs50.harvard.edu/x/2022/">CS50X</a> course. But beyond that it has become a personal
+            project and a goal I am commited to finish and polish until I am satisfy with the results, perhaps never.
+            The projects consists of a little game that takes place in the world I've created (G). All the coding is
+            done in <span class="inside_p">Vanilla JavaScript</span> with the help of some <span class="inside_p">API's</span>, <span class="inside_p">HTML</span>, <span class="inside_p">CSS</span> and the work of some
+            awsome artists in Itch.io (don't forget to check all their work in <a href="/credits">Credits</a>).
+            <br>
+            The game is under development so you wont find much to do for now but if you follow up with it you might get
+            surprised soon.
+            <br> In order to create a great user experience I have created a Backend part for this project using <span class="inside_p">Python</span>
+            with <span class="inside_p">Flask</span> and <span class="inside_p">SQLite3</span> for saving the data in the server, there is no need to find a save button with just
+            closing the window the game will automatically save your progress, which at the moment is just the position
+            you are in the map. <br>
+            I really hope this project finds some people that would be interest in exploring it and get to enjoy this piece of me on
+            the vast WWW.
+        </p>
     </div>
+</div>
 {% endblock %}

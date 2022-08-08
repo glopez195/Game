@@ -155,9 +155,11 @@ h1 {
         transform: translateY(-10vh) scale(0.7);
     }
  }
-.card {
-    animation: bring_in 0.5s;
-}
 .card:hover {
-    box-shadow: 5px 5px rgb(14, 14, 28);
+    border: 2px solid #77c4ff;
+}
+
+.inside_p {
+    font-size:x-large;
+    color:rgb(25, 192, 119);
 }
