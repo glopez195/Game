@@ -127,7 +127,7 @@ def register():
             rows = db.execute("SELECT * FROM users WHERE username = ?", (username,),).fetchall()
             query = "INSERT INTO progress (progress_id, location_x, location_y, health, progress) VALUES (?, ?, ?, ?, ?)"
             session["user_id"] = rows[0][0]
-            db.execute(query, (session['user_id'], -2000, -2000, 100, 0))
+            db.execute(query, (session['user_id'], -1700, -1700, 100, 0))
             game_db.commit()
             # Redirect user to home page
             return redirect("/")

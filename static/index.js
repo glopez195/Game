@@ -285,8 +285,8 @@ const keys = {
 
 // Checks for collision of two rectangles given the initial position, width and height
 function rectangularCollision({ player1, object2 }) {
-    let xPos = player1.position.x + 35;
-    let pWidth = player1.width - 70;
+    let xPos = player1.position.x + 55;
+    let pWidth = player1.width - 120;
     let pHeight = player1.height - 20;
     return (
         xPos + pWidth >= object2.position.x &&
