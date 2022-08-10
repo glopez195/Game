@@ -53,12 +53,18 @@ playerRightAttack.src = '/static/images/WarriorRightAttack01.png';
 const shrineImg = new Image();
 shrineImg.src = 'static/images/shrine.png';
 
+// Mineral
+const mineralImg = new Image();
+mineralImg.src = 'static/images/rock 2.png'
 // Roof Img
 const roofImgTrue = new Image();
 roofImgTrue.src = '/static/images/roof.png';
 const roofImgFalse = new Image();
 roofImgFalse.src = '/static/images/roofOpacity20.png';
 
+// Luces azules
+const luzAzul = new Image();
+luzAzul.src = '/static/images/lucesAzules.png';
 
 // Map Symbols for collisions and objects
 const apple_symbol = 1360;
@@ -71,10 +77,14 @@ const offset = {
     x: -1700,
     y: -1700
 }
+
+let lucesAzules = false;
 let minutes = 0;
 let hours = 0;
 let clock = new Date();
 let hourAdded = false;
+let solIsUp = true;
+const nightColor = '#0c042b'
 const time_icon = document.getElementById('time_icon');
 const time = document.getElementById('time');
 const game_layer = document.getElementById('game_layer');
@@ -126,6 +136,15 @@ const roof_img_true = new Sprite({
     },
     image: roofImgTrue
 })
+
+const blueLights = new Sprite({
+    position: {
+        x: offset.x,
+        y: offset.y
+    },
+    image: luzAzul
+})
+
 // Roof image with an opacity of 20% to see through it
 const roof_img_false = new Sprite({
     position: {
@@ -176,12 +195,24 @@ const shrine = new Sprite({
     }
 })
 
+const mineral = new Sprite({
+    position: {
+        x: 3750,
+        y: 1090
+    },
+    image: mineralImg,
+    frames: {
+        max: 4,
+        animation_speed: shrine_animation_speed * 2.5
+    }
+})
+
 
 // All the objects that are moving to create optic ilusion that the player is moving
-const none_staticMaps = [backGround, foreground, roof_img_false, roof_img_true];
+const none_staticMaps = [backGround, foreground, roof_img_false, roof_img_true, blueLights];
 let staticMaps = [];
 
-window.addEventListener("load", ()=> {
+window.addEventListener("load", () => {
     loading();
 })
 
@@ -191,7 +222,8 @@ async function gameStarts() {
     window.addEventListener("unload", function () {
         let user_data = {
             "xLocation": backGround.position.x,
-            "yLocation": backGround.position.y
+            "yLocation": backGround.position.y,
+            "hour" : hours
         }
         navigator.sendBeacon('/saveProgress', JSON.stringify(user_data));
     })
@@ -201,10 +233,13 @@ async function gameStarts() {
 
     shrine.position.x += stats.xLocation;
     shrine.position.y += stats.yLocation;
+    mineral.position.x += stats.xLocation;
+    mineral.position.y += stats.yLocation;
     none_staticMaps.forEach(movable => {
         movable.position.x = stats.xLocation;
         movable.position.y = stats.yLocation;
     })
+    hours = stats.hour;
 
     collision_map.forEach((row, i) => {
         row.forEach((symbol, j) => {
@@ -234,8 +269,8 @@ async function gameStarts() {
             }
         })
     })
-
-    staticMaps = [...boundaries, ...apples, shrine];
+    adjustLight();
+    staticMaps = [...boundaries, ...apples, shrine, mineral];
 
     //    ----------------------Main refreshing function ---------------------------
     function animate() {
@@ -243,24 +278,22 @@ async function gameStarts() {
         // Draw background
         backGround.draw();
         displayTime();
-        console.log(Date.now())
         // Draw the shrine
         shrine.draw();
         // The commented function below is only for troubleshooting: displays the collision boxes for the terrain
         //boundaries.forEach(boundary => {  boundary.draw();});
-
+        
         // Drawing the apple images whenever there is one in the map
         apples.forEach(apple_item => {
             c.drawImage(apple, apple_item.position.x, apple_item.position.y)
             //if (rectangularCollision(apple_item, player)) {}
         });
-
+        if (lucesAzules) blueLights.draw();
         // Draw player sprite
         player.draw();
 
         // Draw all objects that are being shown on top of the player image
         foreground.draw();
-
         // Draws the roof depending on the position of the player
         drawRoof();
 
@@ -556,19 +589,92 @@ function loading() {
     }
 }
 
-function displayTime()
-{
+function displayTime() {
     clock = new Date();
     minutes = clock.getSeconds();
-    if (minutes === 0 && !hourAdded)
-    {
+    if (minutes === 0 && !hourAdded) {
         hours++;
+        if (hours === 24) {
+            hours = 0;
+        }
+        adjustLight();
         hourAdded = true;
     }
-    if (minutes ===1) hourAdded = false;
-    if (hours === 24)
-    {
-        hours = 0;
+    if (minutes > 1) hourAdded = false;
+    time.innerHTML = hours + ':';
+    if (minutes < 10) time.innerHTML += '0';
+    time.innerHTML += minutes;
+}
+
+function adjustLight() {
+    switch (hours) {
+        case 0:
+            lucesAzules = true;
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.3;
+            break;
+        case 1:
+            lucesAzules = false;
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.3;
+            break;
+        case 2:case 3:
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.3;
+            break;
+        case 4:
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.4;
+            break;
+        case 5:
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.5;
+            break;
+        case 6:
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.6;
+            break;
+        case 7:
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.8;
+            break;
+        case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:case 16:case 17:
+            game_layer.style.opacity = 1;
+            time_layer.style.backgroundColor = nightColor;
+            break;
+        case 18:
+            time_layer.style.backgroundColor = '#b14500';
+            game_layer.style.opacity = 0.9;
+            break;
+        case 19:
+            time_layer.style.backgroundColor = '#b14500';
+            game_layer.style.opacity = 0.8;
+            break;
+        case 20:
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.6;
+            break;
+        case 21:
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.5;
+            break;
+        case 22:
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.4;
+            break;
+        case 23:
+            time_layer.style.backgroundColor = nightColor;
+            game_layer.style.opacity = 0.3;
+            break;
     }
-    time.innerHTML = hours + ':' + minutes;
+    if (hours >= 20 && solIsUp === true || hours < 6 && solIsUp === true) {
+        time_icon.src = '/static/images/moon.png';
+        console.log('sol is down');
+        solIsUp = false;
+    }
+    else if (hours >= 6 && solIsUp === false && hours < 20) {
+        time_icon.src = '/static/images/sun.png';
+        console.log('sol is up');
+        solIsUp = true;
+    }
 }

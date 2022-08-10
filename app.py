@@ -125,9 +125,9 @@ def register():
             query = "INSERT INTO users (username, hash) VALUES (?, ?)"
             db.execute(query, (username, generate_password_hash(password)))
             rows = db.execute("SELECT * FROM users WHERE username = ?", (username,),).fetchall()
-            query = "INSERT INTO progress (progress_id, location_x, location_y, health, progress) VALUES (?, ?, ?, ?, ?)"
+            query = "INSERT INTO progress (progress_id, location_x, location_y, health, progress, hour) VALUES (?, ?, ?, ?, ?, ?)"
             session["user_id"] = rows[0][0]
-            db.execute(query, (session['user_id'], -1700, -1700, 100, 0))
+            db.execute(query, (session['user_id'], -1700, -1700, 100, 0, 8))
             game_db.commit()
             # Redirect user to home page
             return redirect("/")
@@ -153,7 +153,8 @@ def getStats():
             'xLocation': row[0][1],
             'yLocation': row[0][2],
             'health': row[0][3],
-            'progress':row[0][4]
+            'progress':row[0][4],
+            'hour': row[0][5]
         }
         return jsonify(user_data)
 
@@ -203,8 +204,9 @@ def saveProgress():
         with sqlite3.connect('game.db') as game_db:
             db = game_db.cursor()
             # Save location in db
-            query = "UPDATE progress SET location_x = ?,location_y = ? WHERE progress_id = ?"
-            db.execute(query, (user_data['xLocation'], user_data['yLocation'], session['user_id']))
+            query = "UPDATE progress SET location_x = ?,location_y = ?, hour = ? WHERE progress_id = ?"
+            db.execute(query, (user_data['xLocation'], user_data['yLocation'], user_data['hour'], session['user_id']))
+            print(user_data['hour'])
             game_db.commit()
             return ('',200)
 

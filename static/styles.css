@@ -165,9 +165,19 @@ h1 {
 }
 
 #clock {
-    border-bottom: 2px solid rgb(0, 0, 0);
+    border-bottom: 2px solid rgb(0,0,0);
     border-left: 2px solid rgb(0, 0, 0);
     border-right: 2px solid rgb(0, 0, 0);
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
+}
+
+#time_layer {
+    transition-property: background-color;
+    transition-duration: 30s;
+}
+
+#game_layer {
+    transition-property: opacity;
+    transition: 5s;
 }
