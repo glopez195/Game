@@ -71,6 +71,14 @@ const offset = {
     x: -1700,
     y: -1700
 }
+let minutes = 0;
+let hours = 0;
+let clock = new Date();
+let hourAdded = false;
+const time_icon = document.getElementById('time_icon');
+const time = document.getElementById('time');
+const game_layer = document.getElementById('game_layer');
+const time_layer = document.getElementById('time_layer');
 
 // Adding boudaries objects to the coordenates of the collision array
 const boundaries = [];
@@ -234,7 +242,8 @@ async function gameStarts() {
         window.requestAnimationFrame(animate)
         // Draw background
         backGround.draw();
-
+        displayTime();
+        console.log(Date.now())
         // Draw the shrine
         shrine.draw();
         // The commented function below is only for troubleshooting: displays the collision boxes for the terrain
@@ -545,4 +554,21 @@ function loading() {
         bar.style.width = progress.toFixed(2) + '%';
         bar.innerHTML = progress.toFixed(2) + '%';
     }
+}
+
+function displayTime()
+{
+    clock = new Date();
+    minutes = clock.getSeconds();
+    if (minutes === 0 && !hourAdded)
+    {
+        hours++;
+        hourAdded = true;
+    }
+    if (minutes ===1) hourAdded = false;
+    if (hours === 24)
+    {
+        hours = 0;
+    }
+    time.innerHTML = hours + ':' + minutes;
 }
