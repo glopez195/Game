@@ -7,13 +7,24 @@ canvas.width = 1280;
 canvas.height = 720;
 
 // Animation Speeds
-const idle_animation_speed = 12;
+const player_idle_animation_speed = 12;
+const enemy_idle_animation_speed = 4;
+const enemy_attack_animation_speed = 4;
 const running_animation_speed = 5;
 const shrine_animation_speed = 10;
+
+const enemy_directions = ['se', 'sw', 's', 'w', 'e', 'n', 'ne', 'nw'];
+let x1 = 0;
+let y1 = 0;
+let x2 = 0;
+let y2 = 0;
+let x = 0;
+let y = 0;
 
 // Speeds
 const runnin_speed = 4;
 
+let distance;
 
 let stats;
 // Map Img
@@ -57,13 +68,13 @@ const enemyAttackE = new Image();
 enemyAttackE.src = 'static/images/Enemy-Melee-Attack-E.png';
 const enemyAttackN = new Image();
 enemyAttackN.src = 'static/images/Enemy-Melee-Attack-N.png';
-const enemyAttackNE = new Image(); 
+const enemyAttackNE = new Image();
 enemyAttackNE.src = 'static/images/Enemy-Melee-Attack-NE.png';
 const enemyAttackNW = new Image();
 enemyAttackNW.src = 'static/images/Enemy-Melee-Attack-NW.png';
-const enemyAttackS = new Image(); 
+const enemyAttackS = new Image();
 enemyAttackS.src = 'static/images/Enemy-Melee-Attack-S.png';
-const enemyAttackSE = new Image(); 
+const enemyAttackSE = new Image();
 enemyAttackSE.src = 'static/images/Enemy-Melee-Attack-SE.png';
 const enemyAttackSW = new Image();
 enemyAttackSW.src = 'static/images/Enemy-Melee-Attack-SW.png';
@@ -75,11 +86,11 @@ const enemyIdleE = new Image();
 enemyIdleE.src = 'static/images/Enemy-Melee-Idle-E.png';
 const enemyIdleN = new Image();
 enemyIdleN.src = 'static/images/Enemy-Melee-Idle-N.png';
-const enemyIdleNE = new Image(); 
+const enemyIdleNE = new Image();
 enemyIdleNE.src = 'static/images/Enemy-Melee-Idle-NE.png';
 const enemyIdleNW = new Image();
 enemyIdleNW.src = 'static/images/Enemy-Melee-Idle-NW.png';
-const enemyIdleS = new Image(); 
+const enemyIdleS = new Image();
 enemyIdleS.src = 'static/images/Enemy-Melee-Idle-S.png';
 const enemyIdleSE = new Image();
 enemyIdleSE.src = 'static/images/Enemy-Melee-Idle-SE.png';
@@ -94,7 +105,8 @@ shrineImg.src = 'static/images/shrine.png';
 
 // Mineral
 const mineralImg = new Image();
-mineralImg.src = 'static/images/rock 2.png'
+mineralImg.src = 'static/images/rock 2.png';
+
 // Roof Img
 const roofImgTrue = new Image();
 roofImgTrue.src = '/static/images/roof.png';
@@ -140,6 +152,8 @@ const shrine_audio = document.getElementById("shrine_sound");
 shrine_audio.loop = true;
 shrine_audio.volume = 0;
 shrine_audio.autoplay = true;
+const enemy_attack_sound = new Audio('/static/sounds/aggressive-beast-roar.wav');
+const enemy_engage_sound = new Audio('/static/sounds/aggressive-monster-beast-roar.wav');
 
 // Adding boudaries objects to the coordenates of the collision array
 const boundaries = [];
@@ -148,7 +162,7 @@ const apples = [];
 // Count how many keys are being pressed
 let pressedKeys = 0;
 // Last key pressed
-let lastKey = 's';
+let lastKey = 'w';
 // Inserting all the collision boxes coordenates in an array
 const collision_map = []
 for (let i = 0; i < collisions.length; i += MAP_TILES_WIDTH) {
@@ -214,8 +228,10 @@ const player = new Player({
     image: playerDownIdlImg,
     frames: {
         max: 5,
-        animation_speed: idle_animation_speed
+        animation_speed: player_idle_animation_speed
     },
+    idle_animation_speed: player_idle_animation_speed,
+    idle_frames: 5,
     moving: false,
     velocity: runnin_speed,
     sprites: {
@@ -236,35 +252,48 @@ const player = new Player({
 
 const enemy = new Player({
     position: {
-        x: canvas.width / 2,
-        y: canvas.height / 2 + 50
+        x: 2700,
+        y: 1550
     },
-    image: enemyIdleSE,
+    image: enemyIdleS,
     frames: {
         max: 12,
-        animation_speed: idle_animation_speed - 4
+        animation_speed: enemy_idle_animation_speed
     },
+    idle_animation_speed: enemy_idle_animation_speed,
+    idle_frames: 12,
     moving: false,
-    velocity: runnin_speed + 10,
+    velocity: 0.7,
     sprites: {
         down: enemyIdleS,
-        down_right: enemyIdleSW,
+        down_right: enemyIdleSE,
         down_left: enemyIdleSW,
         up: enemyIdleN,
-        up_left: enemyIdleNW,
-        up_right: enemyIdleNE,
+        up_left: enemyIdleNE,
+        up_right: enemyIdleNW,
         left: enemyIdleW,
         right: enemyIdleE,
-        downAttack: enemyAttackS,
+        down_Attack: enemyAttackS,
         down_left_Attack: enemyAttackSW,
         down_right_Attack: enemyAttackSE,
-        upAttack: enemyAttackN,
+        up_Attack: enemyAttackN,
         up_left_Attack: enemyAttackNW,
         up_right_Attack: enemyAttackNE,
-        leftAttack: enemyAttackW,
-        rightAttack: enemyAttackE
+        left_Attack: enemyAttackW,
+        right_Attack: enemyAttackE
     }
 })
+enemy.engaged = false;
+enemy.direction = 'se';
+
+enemy.mapLimit = {
+    position:
+    {
+        x: 2220,
+        y: 1400
+    }
+}
+
 
 const shrine = new Sprite({
     position: {
@@ -314,10 +343,6 @@ async function gameStarts() {
     let response = await fetch('/getStats');
     stats = await response.json();
 
-    shrine.position.x += stats.xLocation;
-    shrine.position.y += stats.yLocation;
-    mineral.position.x += stats.xLocation;
-    mineral.position.y += stats.yLocation;
     none_staticMaps.forEach(movable => {
         movable.position.x = stats.xLocation;
         movable.position.y = stats.yLocation;
@@ -330,8 +355,8 @@ async function gameStarts() {
                 boundaries.push(
                     new Boundary({
                         position: {
-                            x: j * Boundary.width + stats.xLocation,
-                            y: i * Boundary.height + stats.yLocation
+                            x: j * Boundary.width,
+                            y: i * Boundary.height
                         },
                         color: 'rgba(255, 0, 0)'
                     }))
@@ -343,8 +368,8 @@ async function gameStarts() {
             if (symbol == apple_symbol) {
                 apples.push({
                     position: {
-                        x: j * Boundary.width + stats.xLocation,
-                        y: i * Boundary.height + stats.yLocation
+                        x: j * Boundary.width,
+                        y: i * Boundary.height
                     },
                     height: apple.height,
                     width: apple.width
@@ -353,48 +378,47 @@ async function gameStarts() {
         })
     })
     adjustLight();
-    staticMaps = [...boundaries, ...apples, shrine, mineral, enemy];
+    staticMaps = [...boundaries, ...apples, shrine, mineral, enemy, enemy.mapLimit];
+    staticMaps.forEach(movable => {
+        movable.position.x += stats.xLocation;
+        movable.position.y += stats.yLocation;
+    })
+    /*
+    shrine.position.x += stats.xLocation;
+    shrine.position.y += stats.yLocation;
+    mineral.position.x += stats.xLocation;
+    mineral.position.y += stats.yLocation;
+    */
     //    ----------------------Main refreshing function ---------------------------
     function animate() {
         window.requestAnimationFrame(animate)
-
         // Draw background --------------------------------------------------------------------------
         backGround.draw();
         displayTime();
-
         // Draw the shrine and play sound --------------------------------------------------------------------
         shrine.draw();
         play_shrine_sound();
-
         // The commented function below is only for troubleshooting: displays the collision boxes for the terrain
-        //boundaries.forEach(boundary => {  boundary.draw();});
-
+        //boundaries.forEach(boundary => { boundary.draw(); });
         // Drawing the apple images whenever there is one in the map -----------------------------------------
         apples.forEach(apple_item => {
-            c.drawImage(apple, apple_item.position.x, apple_item.position.y)
-            //if (rectangularCollision(apple_item, player)) {}
+            if (apple_item != null) {
+                c.drawImage(apple, apple_item.position.x, apple_item.position.y);
+            }
         });
         if (lucesAzules) blueLights.draw();
         // Draw player sprite -----------------------------------------------------------------------
-        player.draw();
-        if (enemybOut)
-        {
-            if (min != minutes)
-            {
-                navigate_enemy();
-                min = minutes;
-            }
-            enemy.draw();
-        }
+        if (enemybOut) {
+            if (!enemy.moving) enemy.navigate();
+            drawCharacters();
+        } else player.draw();
         // Draw all objects that are being shown on top of the player image -------------------------------
         foreground.draw();
         // Draws the roof depending on the position of the player
         drawRoof();
-
         // Takes input to navigate the player through the map
-        if (!player.moving) navigate();
+        if (!player.moving) player.navigate();
         if (pressedKeys < 0) pressedKeys = 0;
-
     }
     setTimeout(() => {
         animate();
@@ -452,7 +476,12 @@ window.addEventListener('keydown', (e) => {
         case 'q':
             if (player.moving) return;
             player.moving = true;
-            PlayerAttack();
+            player.attack();
+            break
+        case ' ':
+            if (player.moving) return;
+            player.interact();
+            console.log('space pressed');
             break
     }
 })
@@ -503,7 +532,7 @@ window.addEventListener('keyup', (e) => {
 })
 
 
-function navigate() {
+player.navigate = function () {
     // Player pressed 'W' to go up
     if (keys.w.pressed) {
         player.frames.animation_speed = running_animation_speed;
@@ -517,7 +546,7 @@ function navigate() {
             none_staticMaps.forEach((movable) => { movable.position.y += player.velocity })
         }
         else {
-            player.image = playerUpImg;
+            player.image = player.sprites.upIdle;
             player.frames.val = 0;
         }
     }
@@ -577,9 +606,12 @@ function navigate() {
     }
 }
 
-function interact(item) {
-
-    console.log("Cogela cabron");
+player.interact = function () {
+    apples.forEach(apple_item => {
+        if (apple_item != null) {
+            if(rectangularCollision({player1:player, object2:apple_item})) console.log('interacting');
+        }
+    })
 }
 
 function drawRoof() {
@@ -632,7 +664,7 @@ function adjustSpeed() {
     else { player.velocity = runnin_speed; }
 }
 
-function PlayerAttack() {
+player.attack = function () {
     player.frames.animation_speed = 8;
     player.frames.max = 6;
     player.frames.val = 0;
@@ -688,183 +720,246 @@ function loading() {
     }
 }
 
-function displayTime() {
-    clock = new Date();
-    minutes = clock.getSeconds();
-    if (minutes === 0 && !hourAdded) {
-        hours++;
-        if (hours === 24) {
-            hours = 0;
-        }
-        adjustLight();
-        hourAdded = true;
-    }
-    if (minutes > 1) hourAdded = false;
-    time.innerHTML = hours + ':';
-    if (minutes < 10) time.innerHTML += '0';
-    time.innerHTML += minutes;
-}
-
-function adjustLight() {
-    switch (hours) {
-        case 0:
-            lucesAzules = true;
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.3;
-            break;
-        case 1:
-            lucesAzules = false;
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.3;
-            break;
-        case 2: case 3:
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.3;
-            break;
-        case 4:
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.4;
-            break;
-        case 5:
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.5;
-            break;
-        case 6:
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.6;
-            break;
-        case 7:
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.8;
-            break;
-        case 8: case 9: case 10: case 11: case 12: case 13: case 14: case 15: case 16: case 17:
-            game_layer.style.opacity = 1;
-            time_layer.style.backgroundColor = nightColor;
-            break;
-        case 18:
-            time_layer.style.backgroundColor = '#b14500';
-            game_layer.style.opacity = 0.9;
-            break;
-        case 19:
-            time_layer.style.backgroundColor = '#b14500';
-            game_layer.style.opacity = 0.8;
-            break;
-        case 20:
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.6;
-            break;
-        case 21:
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.5;
-            break;
-        case 22:
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.4;
-            break;
-        case 23:
-            time_layer.style.backgroundColor = nightColor;
-            game_layer.style.opacity = 0.3;
-            break;
-    }
-    if (hours >= 20 && solIsUp === true || hours < 6 && solIsUp === true) {
-        time_icon.src = '/static/images/moon.png';
-        solIsUp = false;
-    }
-    else if (hours >= 6 && solIsUp === false && hours < 20) {
-        time_icon.src = '/static/images/sun.png';
-        solIsUp = true;
-    }
-}
-
 function play_shrine_sound() {
     let x = (backGround.position.x + 1160 - canvas.width / 2);
     let y = (backGround.position.y + 1720 - canvas.height / 2);
     let distance = Math.sqrt(((x ** 2) + (y ** 2)))
     volume = Math.round(distance / 100);
+
+    if (volume > 5) {
+        shrine_audio.pause();
+        return;
+    }
     switch (volume) {
         case 0: case 1:
             shrine_audio.volume = 1;
             break;
         case 2:
-            shrine_audio.volume = 0.8;
-            break;
-        case 3:
             shrine_audio.volume = 0.6;
             break;
+        case 3:
+            shrine_audio.volume = 0.3;
+            break;
         case 4:
-            shrine_audio.volume = 0.4;
-            break;
-        case 5:
-            shrine_audio.volume = 0.2;
-            break;
-        case 6:
             shrine_audio.volume = 0.1;
             break;
-        case 7:
-            shrine_audio.volume = 0.08;
-            break;
-        case 8:
+        case 5:
             shrine_audio.volume = 0.05;
             break;
-        case 9:
-            shrine_audio.volume = 0.03;
-            break;
-        default:
-            shrine_audio.volume = 0;
     }
     if (shrine_audio.paused) {
         shrine_audio.play();
     }
 }
 
-function navigate_enemy()
-{
-    let direction = Math.floor(Math.random() * 8);
-    switch (direction)
-    {
-        case 0:
+enemy.navigate = function () {
+    updatePlayerDistance();
+    if (distance < 60) {
+        enemy.attack();
+        enemy.moving = true;
+        return;
+    }
+    else if (distance < 250 && playerInEngagingZone() && !enemy.engaged) enemy.engage();
+    if (enemy.engaged) enemy.direction = findPlayer();
+    enemy.frames.max = 12;
+    enemy.animation_speed = enemy_idle_animation_speed;
+    modifyEnemyVel();
+    switch (enemy.direction) {
+        case 'n':
             // Going N
+            if (enemy.outsideArea(enemy.position.x, enemy.position.y - enemy.velocity)) return;
             enemy.image = enemy.sprites.up;
-            enemy.position.y += enemy.velocity;
-            break; 
-        case 1:
+            enemy.position.y -= enemy.velocity;
+            break;
+        case 'ne':
             // Going NE
+            if (enemy.outsideArea(enemy.position.x + enemy.velocity, enemy.position.y - enemy.velocity)) return;
             enemy.image = enemy.sprites.up_right;
-            enemy.position.y += enemy.velocity;
-            enemy.position.x -= enemy.velocity;
-            break; 
-        case 2:
+            enemy.position.y -= enemy.velocity;
+            enemy.position.x += enemy.velocity;
+            break;
+        case 'nw':
             // Going NW
+            if (enemy.outsideArea(enemy.position.x - enemy.velocity, enemy.position.y - enemy.velocity)) return;
             enemy.image = enemy.sprites.up_left;
-            enemy.position.y += enemy.velocity;
-            enemy.position.x += enemy.velocity;
-            break; 
-        case 3:
-            // Going W
-            enemy.image = enemy.sprites.left;
-            enemy.position.x += enemy.velocity;
-            break; 
-        case 4:
-            // Going SW
-            enemy.image = enemy.sprites.down_left;
-            enemy.position.y -= enemy.velocity;
-            enemy.position.x += enemy.velocity;
-            break; 
-        case 5:
-            // Going SE
-            enemy.image = enemy.sprites.down_left;
             enemy.position.y -= enemy.velocity;
             enemy.position.x -= enemy.velocity;
-            break; 
-        case 6:
+            break;
+        case 'w':
+            // Going W
+            if (enemy.outsideArea(enemy.position.x - enemy.velocity, enemy.position.y)) return;
+            enemy.image = enemy.sprites.left;
+            enemy.position.x -= enemy.velocity;
+            break;
+        case 'sw':
+            // Going SW
+            if (enemy.outsideArea(enemy.position.x - enemy.velocity, enemy.position.y + enemy.velocity)) return;
+            enemy.image = enemy.sprites.down_left;
+            enemy.position.y += enemy.velocity;
+            enemy.position.x -= enemy.velocity;
+            break;
+        case 'se':
+            // Going SE
+            if (enemy.outsideArea(enemy.position.x + enemy.velocity, enemy.position.y + enemy.velocity)) return;
+            enemy.image = enemy.sprites.down_right;
+            enemy.position.y += enemy.velocity;
+            enemy.position.x += enemy.velocity;
+            break;
+        case 's':
             // Going S
+            if (enemy.outsideArea(enemy.position.x, enemy.position.y + enemy.velocity)) return;
             enemy.image = enemy.sprites.down;
-            enemy.position.y -= enemy.velocity;
-            break; 
-        case 7:
+            enemy.position.y += enemy.velocity;
+            break;
+        case 'e':
             // Going E
+            if (enemy.outsideArea(enemy.position.x + enemy.velocity, enemy.position.y)) return;
             enemy.image = enemy.sprites.right;
             enemy.position.x += enemy.velocity;
-            break; 
+            break;
     }
+}
+
+enemy.attack = function () {
+    enemy.frames.animation_speed = 3;
+    enemy.frames.max = 24;
+    enemy.frames.val = 0;
+    enemy.direction = findPlayer();
+    switch (enemy.direction) {
+        case 's':
+            enemy.frames.lastSprite = enemy.sprites.down;
+            enemy.image = enemy.sprites.down_Attack;
+            break;
+        case 'se':
+            enemy.frames.lastSprite = enemy.sprites.down_right;
+            enemy.image = enemy.sprites.down_right_Attack;
+            break;
+        case 'sw':
+            enemy.frames.lastSprite = enemy.sprites.down_left;
+            enemy.image = enemy.sprites.down_left_Attack;
+            break;
+        case 'n':
+            enemy.frames.lastSprite = enemy.sprites.up;
+            enemy.image = enemy.sprites.up_Attack;
+            break;
+        case 'ne':
+            enemy.frames.lastSprite = enemy.sprites.up_right;
+            enemy.image = enemy.sprites.up_right_Attack;
+            break;
+        case 'nw':
+            enemy.frames.lastSprite = enemy.sprites.up_left;
+            enemy.image = enemy.sprites.up_left_Attack;
+            break;
+        case 'e':
+            enemy.frames.lastSprite = enemy.sprites.right;
+            enemy.image = enemy.sprites.right_Attack;
+            break;
+        case 'w':
+            enemy.frames.lastSprite = enemy.sprites.left;
+            enemy.image = enemy.sprites.left_Attack;
+            break;
+    }
+    enemy_attack_sound.play();
+}
+
+function findPlayer() {
+    if (x < 20 && x > -20) {
+        x = 0;
+    }
+    if (y < 20 && y > -20) {
+        y = 0;
+    }
+
+    if (x < 0) {
+        if (y < 0) return 'se';
+        else if (y > 0) return 'ne';
+        else return 'e';
+    }
+    else if (x > 0) {
+        if (y < 0) return 'sw';
+        else if (y > 0) return 'nw';
+        else return 'w';
+    }
+    else {
+        if (y < 0) return 's';
+        else return 'n';
+    }
+}
+
+function updatePlayerDistance() {
+    x1 = (enemy.position.x + enemy.width / 2);
+    y1 = (enemy.position.y + enemy.height - 55);
+    x2 = (player.position.x + player.width / 2);
+    y2 = (player.position.y + player.height - 35);
+    x = x1 - x2;
+    y = y1 - y2;
+    distance = (Math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2))).toFixed(2);
+}
+
+function drawCharacters() {
+    let y1 = (enemy.position.y + enemy.height - 50);
+    let y2 = (player.position.y + player.height - 35);
+    if (y1 < y2) {
+        enemy.draw();
+        player.draw();
+    } else {
+        player.draw();
+        enemy.draw();
+    }
+}
+
+enemy.outsideArea = function (xPosition, yPosition) {
+    let temp_dire = [];
+    let random_direction = Math.floor(Math.random() * 3);
+
+    if (xPosition < enemy.mapLimit.position.x) {
+        temp_dire = ['ne', 'e', 'se'];
+        enemy.direction = temp_dire[random_direction];
+        enemy.engaged = false;
+        return true;
+    }
+    else if (xPosition + enemy.width > enemy.mapLimit.position.x + 980) {
+        temp_dire = ['nw', 'w', 'sw'];
+        enemy.direction = temp_dire[random_direction];
+        enemy.engaged = false;
+        return true;
+    }
+    else if (yPosition < enemy.mapLimit.position.y) {
+        temp_dire = ['sw', 's', 'se'];
+        enemy.direction = temp_dire[random_direction];
+        enemy.engaged = false;
+        return true;
+    }
+    else if (yPosition + enemy.height > enemy.mapLimit.position.y + 650) {
+        temp_dire = ['nw', 'n', 'ne'];
+        enemy.direction = temp_dire[random_direction];
+        enemy.engaged = false;
+        return true;
+    }
+
+}
+
+function modifyEnemyVel() {
+    if (enemy.direction.length > 1 && !enemy.engaged) enemy.velocity = 0.7;
+    else if (enemy.direction.length = 1 && !enemy.engaged) enemy.velocity = 1;
+    else if (enemy.engaged && enemy.direction.length > 1) enemy.velocity = 1.5;
+    else enemy.velocity = 2;
+}
+
+function playerInEngagingZone() {
+    if (player.position.x > enemy.mapLimit.position.x &&
+        player.position.x + player.width < enemy.mapLimit.position.x + 980 &&
+        player.position.y > enemy.mapLimit.position.y &&
+        player.position.y + player.height < enemy.mapLimit.position.y + 650) {
+        return true;
+    }
+    else {
+        enemy.engaged = false;
+        return false;
+    }
+}
+
+enemy.engage = function () {
+    enemy_engage_sound.play();
+    enemy.engaged = true;
 }
