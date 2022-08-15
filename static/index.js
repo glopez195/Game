@@ -103,15 +103,17 @@ enemyIdleW.src = 'static/images/Enemy-Melee-Idle-W.png';
 const shrineImg = new Image();
 shrineImg.src = 'static/images/shrine.png';
 
+// Merchant Img
+const merchantImg = new Image();
+merchantImg.src = 'static/images/NPC Merchant-idle.png';
+
 // Mineral
 const mineralImg = new Image();
 mineralImg.src = 'static/images/rock 2.png';
 
-// Roof Img
-const roofImgTrue = new Image();
-roofImgTrue.src = '/static/images/roof.png';
-const roofImgFalse = new Image();
-roofImgFalse.src = '/static/images/roofOpacity20.png';
+// Icons
+const appleIcon = new Image();
+appleIcon.src = 'static/images/appleIcon.png';
 
 // Luces azules
 const luzAzul = new Image();
@@ -155,6 +157,8 @@ shrine_audio.autoplay = true;
 const enemy_attack_sound = new Audio('/static/sounds/aggressive-beast-roar.wav');
 const enemy_engage_sound = new Audio('/static/sounds/aggressive-monster-beast-roar.wav');
 
+let nextFreeSlot = 0;
+
 // Adding boudaries objects to the coordenates of the collision array
 const boundaries = [];
 // Adding apples objects to the coordenates of the apples array
@@ -193,30 +197,12 @@ const foreground = new Sprite({
     image: foregroundImg
 })
 
-// Solid Roof
-const roof_img_true = new Sprite({
-    position: {
-        x: offset.x,
-        y: offset.y
-    },
-    image: roofImgTrue
-})
-
 const blueLights = new Sprite({
     position: {
         x: offset.x,
         y: offset.y
     },
     image: luzAzul
-})
-
-// Roof image with an opacity of 20% to see through it
-const roof_img_false = new Sprite({
-    position: {
-        x: offset.x,
-        y: offset.y
-    },
-    image: roofImgFalse
 })
 
 //   Creating Player object
@@ -307,6 +293,18 @@ const shrine = new Sprite({
     }
 })
 
+const merchant = new Sprite({
+    position: {
+        x: 2930,
+        y: 725
+    },
+    image: merchantImg,
+    frames: {
+        max: 8,
+        animation_speed: shrine_animation_speed
+    }
+})
+
 const mineral = new Sprite({
     position: {
         x: 3750,
@@ -318,10 +316,16 @@ const mineral = new Sprite({
         animation_speed: shrine_animation_speed * 2.5
     }
 })
-
-
+player.items = [null, null, null, null, null, null, null, null, null];
+const inventory = new Inventory({
+    items: player.items,
+    itemImages: {
+        apple: appleIcon
+    },
+    state: 'hidden'
+})
 // All the objects that are moving to create optic ilusion that the player is moving
-const none_staticMaps = [backGround, foreground, roof_img_false, roof_img_true, blueLights];
+const none_staticMaps = [backGround, foreground, blueLights];
 let staticMaps = [];
 
 window.addEventListener("load", () => {
@@ -378,7 +382,7 @@ async function gameStarts() {
         })
     })
     adjustLight();
-    staticMaps = [...boundaries, ...apples, shrine, mineral, enemy, enemy.mapLimit];
+    staticMaps = [...boundaries, ...apples, shrine,merchant, mineral, enemy, enemy.mapLimit];
     staticMaps.forEach(movable => {
         movable.position.x += stats.xLocation;
         movable.position.y += stats.yLocation;
@@ -397,6 +401,7 @@ async function gameStarts() {
         displayTime();
         // Draw the shrine and play sound --------------------------------------------------------------------
         shrine.draw();
+        merchant.draw();
         play_shrine_sound();
         // The commented function below is only for troubleshooting: displays the collision boxes for the terrain
         //boundaries.forEach(boundary => { boundary.draw(); });
@@ -414,8 +419,6 @@ async function gameStarts() {
         } else player.draw();
         // Draw all objects that are being shown on top of the player image -------------------------------
         foreground.draw();
-        // Draws the roof depending on the position of the player
-        drawRoof();
         // Takes input to navigate the player through the map
         if (!player.moving) player.navigate();
         if (pressedKeys < 0) pressedKeys = 0;
@@ -478,11 +481,13 @@ window.addEventListener('keydown', (e) => {
             player.moving = true;
             player.attack();
             break
-        case ' ':
+        case 'f':
             if (player.moving) return;
             player.interact();
-            console.log('space pressed');
             break
+        case 'i':
+            inventory.changeState();
+            break;
     }
 })
 
@@ -607,18 +612,16 @@ player.navigate = function () {
 }
 
 player.interact = function () {
-    apples.forEach(apple_item => {
+    apples.forEach((apple_item, index) => {
         if (apple_item != null) {
-            if(rectangularCollision({player1:player, object2:apple_item})) console.log('interacting');
+            if(rectangularCollision({player1:player, object2:apple_item}))
+            {
+                console.log('picked up');
+                apples[index] = null;
+                inventory.add('apple');
+            }
         }
     })
-}
-
-function drawRoof() {
-    if (backGround.position.x < -2900 && backGround.position.y > -250) {
-        roof_img_false.draw();
-    }
-    else { roof_img_true.draw(); }
 }
 
 function willCrash(direction) {
@@ -962,4 +965,29 @@ function playerInEngagingZone() {
 enemy.engage = function () {
     enemy_engage_sound.play();
     enemy.engaged = true;
+}
+
+inventory.add = function(item){
+    let picked = false;
+    inventory.items.forEach((invItem, index) => {
+        if (invItem!=null){
+            if (invItem.name === item){
+                invItem.count++;
+                picked = true;
+            }
+        }else {nextFreeSlot = index;console.log(nextFreeSlot);}
+    });
+    if(picked) {inventory.update();return true;}
+    else if (inventory.items[nextFreeSlot]!=null){
+        console.log("Inventory Full");
+        return false;
+    } else {
+        inventory.items[nextFreeSlot] = {
+            name: item,
+            count: 1
+        }
+        console.log(nextFreeSlot);
+        inventory.update();
+        return true;
+    }
 }
