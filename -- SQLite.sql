@@ -4,4 +4,5 @@
 --SELECT * FROM users;
 --DELETE FROM users;
 -- SELECT * FROM progress;
--- ALTER TABLE progress ADD COLUMN hour;
+-- ALTER TABLE progress ADD COLUMN hour INTEGER;
+.schema
