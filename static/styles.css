@@ -7,7 +7,7 @@ body {
     background-image: linear-gradient(to bottom right, rgb(0, 0, 0), #4588ba);
     background-repeat: no-repeat;
     background-attachment: fixed;
-    height:0vmax;
+    height: 0vmax;
     font-family: gideon-roman, sans-serif;
     font-weight: bold;
 }
@@ -40,7 +40,7 @@ body {
     opacity: 0;
     display: none;
     transition: opacity 2s ease-in;
-    justify-content:center;
+    justify-content: center;
     padding: 5px 0;
 }
 
@@ -48,6 +48,7 @@ body {
     position: fixed;
     z-index: 30000;
 }
+
 .update {
     width: 100%;
     opacity: 0.8;
@@ -127,75 +128,77 @@ h1 {
     font-size: large;
 }
 
- .lights {
+.lights {
     position: relative;
     display: flex;
- }
+}
 
- .lights span
- {
+.lights span {
     position: relative;
-    width:30px;
+    width: 30px;
     height: 30px;
     background: rgb(164, 57, 202);
-    margin:0 4px;
+    margin: 0 4px;
     border-radius: 50%;
-    box-shadow:0 0 0 10px rgb(78, 24, 98),
-    0 0 50px rgb(164, 57, 202),
-    0 0 100px rgb(164, 57, 202);
+    box-shadow: 0 0 0 10px rgb(78, 24, 98),
+        0 0 50px rgb(164, 57, 202),
+        0 0 100px rgb(164, 57, 202);
     animation: animate 15s linear infinite;
     animation-duration: calc(125s / var(--i));
- }
-.lights :nth-child(even)
-{
-    background: rgb(38, 230, 237);
-    box-shadow:0 0 0 10px rgb(18, 105, 108),
-    0 0 50px rgb(38, 230, 237),
-    0 0 100px rgb(38, 230, 237);
 }
+
+.lights :nth-child(even) {
+    background: rgb(38, 230, 237);
+    box-shadow: 0 0 0 10px rgb(18, 105, 108),
+        0 0 50px rgb(38, 230, 237),
+        0 0 100px rgb(38, 230, 237);
+}
+
 @keyframes animate {
-    0%{
+    0% {
         transform: translateY(100vh) scale(0);
     }
-    100%{
+
+    100% {
         transform: translateY(-10vh) scale(0.7);
     }
- }
+}
+
 .card:hover {
     border: 2px solid #77c4ff;
 }
 
 .inside_p {
-    font-size:x-large;
-    color:rgb(25, 192, 119);
+    font-size: x-large;
+    color: rgb(25, 192, 119);
 }
 
 #clock_wrapper {
-    border-bottom: 2px solid rgb(0,0,0);
+    border-bottom: 2px solid rgb(0, 0, 0);
     border-left: 2px solid rgb(0, 0, 0);
     border-right: 2px solid rgb(0, 0, 0);
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
-    position:fixed; 
-    height: 35px; 
-    width:120px; 
+    position: fixed;
+    height: 35px;
+    width: 120px;
     background-color: rgba(29, 29, 29, 0.747);
     margin: 0;
 }
 
 #clock {
-    display:flex;
-    justify-content: end; 
+    display: flex;
+    justify-content: end;
     width: 40%;
     padding: 0;
     align-items: center;
     height: 35px;
-    padding:0 5px 2px 0;
+    padding: 0 5px 2px 0;
 }
 
 #barra_de_carga {
-    background-color:#4588ba;
-    color: white; 
+    background-color: #4588ba;
+    color: white;
     font-size: 20px;
     height: 30px;
 }
@@ -203,20 +206,20 @@ h1 {
 #time_layer {
     transition-property: background-color;
     transition-duration: 30s;
-    height:720px; 
+    height: 720px;
     width: 1280px;
     background-color: rgb(137, 137, 137);
     position: absolute;
 }
 
 #time {
-    display:flex;
+    display: flex;
     width: 60%;
     padding: 0;
-    font-size:large;
+    font-size: large;
     justify-content: start;
-    color:white;
-    padding:0 0px 2px 15px;
+    color: white;
+    padding: 0 0px 2px 15px;
     align-items: center;
 }
 
@@ -229,7 +232,7 @@ h1 {
 
 #UI {
     display: flex;
-    height:720px; 
+    height: 720px;
     width: 1280px;
     position: absolute;
 }
@@ -249,12 +252,20 @@ h1 {
     width: 175px;
     background-image: url('/static/images/inventory.png');
     background-repeat: no-repeat;
-    animation:hide .5s alternate;
+    animation: hide .5s alternate;
 }
+
 @keyframes hide {
-    0% {opacity: 0; transform: translateX(-5vh);}
-    100% {opacity: 1;}
+    0% {
+        opacity: 0;
+        transform: translateX(-5vh);
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
+
 #inventory_grid {
     height: 162px;
     width: 162px;
@@ -292,16 +303,46 @@ h1 {
 
 #health_bar_wrapper {
     display: flex;
-    align-items: end;
-    justify-content: start;
+    align-items: flex-end;
+    justify-content: flex-start;
     height: 100%;
     width: 50%;
+    flex-direction: row;
 }
 
 #health_bar_border {
-    margin: 20px;
+    margin: 10px;
     height: 27px;
     border-radius: 26px;
     width: 287px;
+    background: #525252;
+    background: -webkit-linear-gradient(0deg, #525252 0%, #898989 50%, #c6c6c6 100%);
+    background: linear-gradient(0deg, #525252 0%, #898989 50%, #c6c6c6 100%);
     border: 2px solid black;
+}
+
+#healthbar {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: #650000;
+    background: -webkit-linear-gradient(0deg, #650000 0%, #a72f2f 50%, #ba6e6e 100%);
+    background: linear-gradient(0deg, #650000 0%, #a72f2f 50%, #ba6e6e 100%);
+}
+
+#portrait_border {
+    width: 110px;
+    height: 110px;
+    border-radius: 100%;
+    border: 2px solid #000;
+    background: rgb(49, 49, 49);
+    background: linear-gradient(25deg, rgba(49, 49, 49, 1) 0%, rgba(187, 187, 187, 1) 100%);
+}
+
+#portrait_wraper {
+    width: 110px;
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }

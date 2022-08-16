@@ -35,6 +35,11 @@ mapImg.src = "/static/images/map.png";
 const foregroundImg = new Image();
 foregroundImg.src = '/static/images/overlayer.png';
 
+let playerDamage = {
+    hit:false,
+    damage:0
+};
+
 const apple = new Image();
 apple.src = '/static/images/apple.png';
 // Player Img
@@ -157,7 +162,8 @@ shrine_audio.autoplay = true;
 const enemy_attack_sound = new Audio('/static/sounds/aggressive-beast-roar.wav');
 const enemy_engage_sound = new Audio('/static/sounds/aggressive-monster-beast-roar.wav');
 
-let nextFreeSlot = 0;
+//------------------------UI Variables
+const healthBar = document.querySelector('#healthbar');
 
 // Adding boudaries objects to the coordenates of the collision array
 const boundaries = [];
@@ -219,6 +225,7 @@ const player = new Player({
     idle_animation_speed: player_idle_animation_speed,
     idle_frames: 5,
     moving: false,
+    health: 100,
     velocity: runnin_speed,
     sprites: {
         down: playerDownImg,
@@ -236,12 +243,14 @@ const player = new Player({
     }
 })
 
-const enemy = new Player({
+const gosth = new Enemy({
     position: {
         x: 2700,
         y: 1550
     },
     image: enemyIdleS,
+    attack_animation_speed: 3,
+    attack_frames: 24,
     frames: {
         max: 12,
         animation_speed: enemy_idle_animation_speed
@@ -249,7 +258,17 @@ const enemy = new Player({
     idle_animation_speed: enemy_idle_animation_speed,
     idle_frames: 12,
     moving: false,
+    attack_reach : 60,
     velocity: 0.7,
+    mapLimit: {position: {
+        x: 2220,
+        y: 1400
+    } },
+    sounds: {
+        attack:enemy_attack_sound,
+        hurt: null,
+        engaged:enemy_engage_sound,
+    },
     sprites: {
         down: enemyIdleS,
         down_right: enemyIdleSE,
@@ -269,17 +288,6 @@ const enemy = new Player({
         right_Attack: enemyAttackE
     }
 })
-enemy.engaged = false;
-enemy.direction = 'se';
-
-enemy.mapLimit = {
-    position:
-    {
-        x: 2220,
-        y: 1400
-    }
-}
-
 
 const shrine = new Sprite({
     position: {
@@ -332,17 +340,19 @@ window.addEventListener("load", () => {
     loading();
 })
 
+function beaconOfHope() {
+    if (gosth.engaged) return;
+    let user_data = {
+        "xLocation": backGround.position.x,
+        "yLocation": backGround.position.y,
+        "hour": hours
+    }
+    navigator.sendBeacon('/saveProgress', JSON.stringify(user_data));
+}
 
 async function gameStarts() {
     // Save progress in case of window closing 
-    window.addEventListener("unload", function () {
-        let user_data = {
-            "xLocation": backGround.position.x,
-            "yLocation": backGround.position.y,
-            "hour": hours
-        }
-        navigator.sendBeacon('/saveProgress', JSON.stringify(user_data));
-    })
+    window.addEventListener("unload", beaconOfHope);
 
     let response = await fetch('/getStats');
     stats = await response.json();
@@ -382,17 +392,13 @@ async function gameStarts() {
         })
     })
     adjustLight();
-    staticMaps = [...boundaries, ...apples, shrine,merchant, mineral, enemy, enemy.mapLimit];
+    staticMaps = [...boundaries, ...apples, shrine,merchant, mineral, gosth, gosth.mapLimit];
     staticMaps.forEach(movable => {
         movable.position.x += stats.xLocation;
         movable.position.y += stats.yLocation;
     })
-    /*
-    shrine.position.x += stats.xLocation;
-    shrine.position.y += stats.yLocation;
-    mineral.position.x += stats.xLocation;
-    mineral.position.y += stats.yLocation;
-    */
+    
+    
     //    ----------------------Main refreshing function ---------------------------
     function animate() {
         window.requestAnimationFrame(animate)
@@ -414,9 +420,10 @@ async function gameStarts() {
         if (lucesAzules) blueLights.draw();
         // Draw player sprite -----------------------------------------------------------------------
         if (enemybOut) {
-            if (!enemy.moving) enemy.navigate();
+            if (!gosth.moving) gosth.navigate(player.position.x, player.position.y);
             drawCharacters();
         } else player.draw();
+        player.checkStatus();
         // Draw all objects that are being shown on top of the player image -------------------------------
         foreground.draw();
         // Takes input to navigate the player through the map
@@ -722,6 +729,17 @@ function loading() {
         bar.innerHTML = progress.toFixed(2) + '%';
     }
 }
+player.checkStatus = function(){
+    if (playerDamage.hit)
+    {
+        if (playerDamage.damage > player.health) playerDamage.damage = player.health;
+        player.health -= playerDamage.damage;
+        console.log(player.health);
+        healthBar.style.width = player.health + '%';
+        playerDamage.hit = false;
+    }
+}
+
 
 function play_shrine_sound() {
     let x = (backGround.position.x + 1160 - canvas.width / 2);
@@ -755,216 +773,16 @@ function play_shrine_sound() {
     }
 }
 
-enemy.navigate = function () {
-    updatePlayerDistance();
-    if (distance < 60) {
-        enemy.attack();
-        enemy.moving = true;
-        return;
-    }
-    else if (distance < 250 && playerInEngagingZone() && !enemy.engaged) enemy.engage();
-    if (enemy.engaged) enemy.direction = findPlayer();
-    enemy.frames.max = 12;
-    enemy.animation_speed = enemy_idle_animation_speed;
-    modifyEnemyVel();
-    switch (enemy.direction) {
-        case 'n':
-            // Going N
-            if (enemy.outsideArea(enemy.position.x, enemy.position.y - enemy.velocity)) return;
-            enemy.image = enemy.sprites.up;
-            enemy.position.y -= enemy.velocity;
-            break;
-        case 'ne':
-            // Going NE
-            if (enemy.outsideArea(enemy.position.x + enemy.velocity, enemy.position.y - enemy.velocity)) return;
-            enemy.image = enemy.sprites.up_right;
-            enemy.position.y -= enemy.velocity;
-            enemy.position.x += enemy.velocity;
-            break;
-        case 'nw':
-            // Going NW
-            if (enemy.outsideArea(enemy.position.x - enemy.velocity, enemy.position.y - enemy.velocity)) return;
-            enemy.image = enemy.sprites.up_left;
-            enemy.position.y -= enemy.velocity;
-            enemy.position.x -= enemy.velocity;
-            break;
-        case 'w':
-            // Going W
-            if (enemy.outsideArea(enemy.position.x - enemy.velocity, enemy.position.y)) return;
-            enemy.image = enemy.sprites.left;
-            enemy.position.x -= enemy.velocity;
-            break;
-        case 'sw':
-            // Going SW
-            if (enemy.outsideArea(enemy.position.x - enemy.velocity, enemy.position.y + enemy.velocity)) return;
-            enemy.image = enemy.sprites.down_left;
-            enemy.position.y += enemy.velocity;
-            enemy.position.x -= enemy.velocity;
-            break;
-        case 'se':
-            // Going SE
-            if (enemy.outsideArea(enemy.position.x + enemy.velocity, enemy.position.y + enemy.velocity)) return;
-            enemy.image = enemy.sprites.down_right;
-            enemy.position.y += enemy.velocity;
-            enemy.position.x += enemy.velocity;
-            break;
-        case 's':
-            // Going S
-            if (enemy.outsideArea(enemy.position.x, enemy.position.y + enemy.velocity)) return;
-            enemy.image = enemy.sprites.down;
-            enemy.position.y += enemy.velocity;
-            break;
-        case 'e':
-            // Going E
-            if (enemy.outsideArea(enemy.position.x + enemy.velocity, enemy.position.y)) return;
-            enemy.image = enemy.sprites.right;
-            enemy.position.x += enemy.velocity;
-            break;
-    }
-}
-
-enemy.attack = function () {
-    enemy.frames.animation_speed = 3;
-    enemy.frames.max = 24;
-    enemy.frames.val = 0;
-    enemy.direction = findPlayer();
-    switch (enemy.direction) {
-        case 's':
-            enemy.frames.lastSprite = enemy.sprites.down;
-            enemy.image = enemy.sprites.down_Attack;
-            break;
-        case 'se':
-            enemy.frames.lastSprite = enemy.sprites.down_right;
-            enemy.image = enemy.sprites.down_right_Attack;
-            break;
-        case 'sw':
-            enemy.frames.lastSprite = enemy.sprites.down_left;
-            enemy.image = enemy.sprites.down_left_Attack;
-            break;
-        case 'n':
-            enemy.frames.lastSprite = enemy.sprites.up;
-            enemy.image = enemy.sprites.up_Attack;
-            break;
-        case 'ne':
-            enemy.frames.lastSprite = enemy.sprites.up_right;
-            enemy.image = enemy.sprites.up_right_Attack;
-            break;
-        case 'nw':
-            enemy.frames.lastSprite = enemy.sprites.up_left;
-            enemy.image = enemy.sprites.up_left_Attack;
-            break;
-        case 'e':
-            enemy.frames.lastSprite = enemy.sprites.right;
-            enemy.image = enemy.sprites.right_Attack;
-            break;
-        case 'w':
-            enemy.frames.lastSprite = enemy.sprites.left;
-            enemy.image = enemy.sprites.left_Attack;
-            break;
-    }
-    enemy_attack_sound.play();
-}
-
-function findPlayer() {
-    if (x < 20 && x > -20) {
-        x = 0;
-    }
-    if (y < 20 && y > -20) {
-        y = 0;
-    }
-
-    if (x < 0) {
-        if (y < 0) return 'se';
-        else if (y > 0) return 'ne';
-        else return 'e';
-    }
-    else if (x > 0) {
-        if (y < 0) return 'sw';
-        else if (y > 0) return 'nw';
-        else return 'w';
-    }
-    else {
-        if (y < 0) return 's';
-        else return 'n';
-    }
-}
-
-function updatePlayerDistance() {
-    x1 = (enemy.position.x + enemy.width / 2);
-    y1 = (enemy.position.y + enemy.height - 55);
-    x2 = (player.position.x + player.width / 2);
-    y2 = (player.position.y + player.height - 35);
-    x = x1 - x2;
-    y = y1 - y2;
-    distance = (Math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2))).toFixed(2);
-}
-
 function drawCharacters() {
-    let y1 = (enemy.position.y + enemy.height - 50);
+    let y1 = (gosth.position.y + gosth.height - 50);
     let y2 = (player.position.y + player.height - 35);
     if (y1 < y2) {
-        enemy.draw();
+        gosth.draw();
         player.draw();
     } else {
         player.draw();
-        enemy.draw();
+        gosth.draw();
     }
-}
-
-enemy.outsideArea = function (xPosition, yPosition) {
-    let temp_dire = [];
-    let random_direction = Math.floor(Math.random() * 3);
-
-    if (xPosition < enemy.mapLimit.position.x) {
-        temp_dire = ['ne', 'e', 'se'];
-        enemy.direction = temp_dire[random_direction];
-        enemy.engaged = false;
-        return true;
-    }
-    else if (xPosition + enemy.width > enemy.mapLimit.position.x + 980) {
-        temp_dire = ['nw', 'w', 'sw'];
-        enemy.direction = temp_dire[random_direction];
-        enemy.engaged = false;
-        return true;
-    }
-    else if (yPosition < enemy.mapLimit.position.y) {
-        temp_dire = ['sw', 's', 'se'];
-        enemy.direction = temp_dire[random_direction];
-        enemy.engaged = false;
-        return true;
-    }
-    else if (yPosition + enemy.height > enemy.mapLimit.position.y + 650) {
-        temp_dire = ['nw', 'n', 'ne'];
-        enemy.direction = temp_dire[random_direction];
-        enemy.engaged = false;
-        return true;
-    }
-
-}
-
-function modifyEnemyVel() {
-    if (enemy.direction.length > 1 && !enemy.engaged) enemy.velocity = 0.7;
-    else if (enemy.direction.length = 1 && !enemy.engaged) enemy.velocity = 1;
-    else if (enemy.engaged && enemy.direction.length > 1) enemy.velocity = 1.5;
-    else enemy.velocity = 2;
-}
-
-function playerInEngagingZone() {
-    if (player.position.x > enemy.mapLimit.position.x &&
-        player.position.x + player.width < enemy.mapLimit.position.x + 980 &&
-        player.position.y > enemy.mapLimit.position.y &&
-        player.position.y + player.height < enemy.mapLimit.position.y + 650) {
-        return true;
-    }
-    else {
-        enemy.engaged = false;
-        return false;
-    }
-}
-
-enemy.engage = function () {
-    enemy_engage_sound.play();
-    enemy.engaged = true;
 }
 
 inventory.add = function(item){
