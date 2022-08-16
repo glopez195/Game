@@ -11,26 +11,58 @@ Play
     document.getElementById('contenedor').hidden = true;
     document.getElementById('main_body').classList.remove('py-5');
 </script>
-<div id="loader_main" style="width: 100%;display: flex;padding: 5px 0;justify-content: center;">
-    <div style="align-items:center; justify-content:center;display: flex;flex-direction: column; height: 720px;width:1280px;">
+<div id="loader_main">
+    <div
+        style="align-items:center; justify-content:center;display: flex;flex-direction: column; height: 720px;width:1280px;">
         <span class="loader">Loading...</span>
         <div class="progress" style="width:500px;height: 30px;">
-            <div id="barra_de_carga" class="progress-bar" role="progressbar" style="background-color:#4588ba;color: white; font-size: 20px;height: 30px;" aria-valuemin="0" aria-valuemax="100">0%
+            <div id="barra_de_carga" class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">0%
             </div>
         </div>
     </div>
 </div>
-<div id="canvas" style="justify-content:center;padding: 5px 0;">
-    <div id="time_layer" style="height:720px; width: 1280px;background-color: rgb(137, 137, 137);position: absolute;"></div>
-    <canvas id="game_layer" style="background-color: white;position: absolute;"></canvas>
-    <div id="clock" style="position:fixed; height: 35px; width:120px; background-color: rgba(29, 29, 29, 0.747);margin: 0;">
-        <div style="display:flex;">
-            <div style="display:flex;justify-content: end; width: 40%;padding: 0;align-items: center;height: 35px;padding:0 5px 2px 0;">
-            <img id="time_icon" src="/static/images/sun.png" height="25" width="25"></div>
-            <div id="time" style="display:flex;width: 60%;padding: 0;font-size:large;justify-content: start;color:white;padding:0 0px 2px 15px;align-items: center;">
+<div id="canvas">
+    <div id="time_layer"></div>
+    <canvas id="game_layer"></canvas>
+    <div id='UI'>
+        <div id="health_bar_wrapper">
+            <div id="health_bar_border">
+                <div id="healthbar"></div>
+            </div>
+        </div>
+        <div id="inventory_wrapper">
+            <div id="inventory">
+                <div id="inventory_grid">
+                    <div class="inventory_row">
+                        <span class="inventory_slot"></span>
+                        <span class="inventory_slot mid_slot"></span>
+                        <span class="inventory_slot"></span>
+                    </div>
+                    <div class="inventory_row">
+                        <span class="inventory_slot"></span>
+                        <span class="inventory_slot mid_slot"></span>
+                        <span class="inventory_slot"></span>
+                    </div>
+                    <div class="inventory_row">
+                        <span class="inventory_slot"></span>
+                        <span class="inventory_slot mid_slot"></span>
+                        <span class="inventory_slot"></span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <div id="clock_wrapper">
+        <div style="display:flex;">
+            <div id="clock">
+                <img id="time_icon" src="/static/images/sun.png" height="25" width="25">
+            </div>
+            <div id="time"></div>
+        </div>
+    </div>
+    <div></div>
+    <audio id="shrine_sound" src="/static/sounds/OverflowingWaterPipeLoop.wav"></audio>
 </div>
 <script defer src="/static/index.js"></script>
+<script defer src="/static/time.js"></script>
 {% endblock %}

@@ -50,7 +50,7 @@ class Boundary {
 }
 
 class Player {
-    constructor({ position, velocity, image, frames = { max: 1, animation_speed: 10 }, sprites, moving }) {
+    constructor({ position, velocity, image, frames = { max: 1, animation_speed: 10 }, sprites, moving, idle_animation_speed, idle_frames }) {
         this.position = position;
         this.image = image;
         this.frames = { ...frames, val: 0, elapsed: 0, lastSprite: image };
@@ -61,6 +61,8 @@ class Player {
             this.height = this.image.height
         };
         this.sprites = sprites;
+        this.idle_animation_speed = idle_animation_speed;
+        this.idle_frames = idle_frames;
     }
 
     draw() {
@@ -78,18 +80,49 @@ class Player {
 
         this.frames.elapsed++;
         if (this.frames.elapsed % this.frames.animation_speed === 0) {
-            if (this.frames.val < this.frames.max - 1) this.frames.val++;
-            else if(this.moving === true) 
-            {   
-                player.frames.animation_speed = 12;
+            if (this.frames.val < this.frames.max - 1) {
+                this.frames.val++;
+            }
+            else if (this.moving === true) {
+                this.frames.animation_speed = this.idle_animation_speed;
                 this.image = this.frames.lastSprite;
-                player.frames.max = 5;
+                this.frames.max = this.idle_frames;
                 this.frames.val = 0;
                 this.moving = false;
-                
             }
             else this.frames.val = 0;
         }
 
+    }
+}
+
+class Inventory {
+    constructor({items, itemImages, state}) {
+        this.items = items;
+        this.itemImages = itemImages;
+        this.state = state;
+        this.ui = document.querySelector("#inventory");
+        this.slots = document.querySelectorAll(".inventory_slot");
+    }
+    update() {
+        this.items.forEach((value, index) => {
+            let icon;
+            if (value != null) {
+                icon = this.itemImages[value.name];
+                this.slots[8 - index].innerHTML = value.count;
+                this.slots[8 - index].appendChild(icon);
+            }
+        })
+    }
+
+    changeState(){
+        if (inventory.state === 'hidden')
+        {
+            this.ui.style.display = "flex";
+            inventory.state = 'shown';
+        } else {
+            this.ui.style.display = "none";
+            inventory.state = 'hidden';
+        }
     }
 }

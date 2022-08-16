@@ -30,12 +30,18 @@ body {
 #loader_main {
     background: url('/static/images/map_blurried.png') no-repeat center fixed;
     background-size: cover;
+    width: 100%;
+    display: flex;
+    padding: 5px 0;
+    justify-content: center;
 }
 
 #canvas {
     opacity: 0;
     display: none;
     transition: opacity 2s ease-in;
+    justify-content:center;
+    padding: 5px 0;
 }
 
 #menu_ {
@@ -164,20 +170,138 @@ h1 {
     color:rgb(25, 192, 119);
 }
 
-#clock {
+#clock_wrapper {
     border-bottom: 2px solid rgb(0,0,0);
     border-left: 2px solid rgb(0, 0, 0);
     border-right: 2px solid rgb(0, 0, 0);
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
+    position:fixed; 
+    height: 35px; 
+    width:120px; 
+    background-color: rgba(29, 29, 29, 0.747);
+    margin: 0;
+}
+
+#clock {
+    display:flex;
+    justify-content: end; 
+    width: 40%;
+    padding: 0;
+    align-items: center;
+    height: 35px;
+    padding:0 5px 2px 0;
+}
+
+#barra_de_carga {
+    background-color:#4588ba;
+    color: white; 
+    font-size: 20px;
+    height: 30px;
 }
 
 #time_layer {
     transition-property: background-color;
     transition-duration: 30s;
+    height:720px; 
+    width: 1280px;
+    background-color: rgb(137, 137, 137);
+    position: absolute;
+}
+
+#time {
+    display:flex;
+    width: 60%;
+    padding: 0;
+    font-size:large;
+    justify-content: start;
+    color:white;
+    padding:0 0px 2px 15px;
+    align-items: center;
 }
 
 #game_layer {
+    background-color: white;
+    position: absolute;
     transition-property: opacity;
-    transition: 5s;
+    transition-duration: 5s;
+}
+
+#UI {
+    display: flex;
+    height:720px; 
+    width: 1280px;
+    position: absolute;
+}
+
+#inventory_wrapper {
+    z-index: 7;
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    height: 100%;
+    width: 50%;
+}
+
+#inventory {
+    display: none;
+    height: 225px;
+    width: 175px;
+    background-image: url('/static/images/inventory.png');
+    background-repeat: no-repeat;
+    animation:hide .5s alternate;
+}
+@keyframes hide {
+    0% {opacity: 0; transform: translateX(-5vh);}
+    100% {opacity: 1;}
+}
+#inventory_grid {
+    height: 162px;
+    width: 162px;
+    margin: 45px 4px;
+}
+
+.inventory_row {
+    width: 162px;
+    height: 50px;
+    display: flex;
+    margin-bottom: 6px;
+}
+
+.inventory_column {
+    height: 50px;
+    width: 50px;
+    margin-right: 3px;
+    margin-left: 3px;
+}
+
+.mid_slot {
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+.inventory_slot {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-end;
+    font-size: 10px;
+    height: 50px;
+    width: 50px;
+    color: #cfe5f3;
+}
+
+#health_bar_wrapper {
+    display: flex;
+    align-items: end;
+    justify-content: start;
+    height: 100%;
+    width: 50%;
+}
+
+#health_bar_border {
+    margin: 20px;
+    height: 27px;
+    border-radius: 26px;
+    width: 287px;
+    border: 2px solid black;
 }
