@@ -2,31 +2,65 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
-// Asisgning canvas size
+// Canvas Variables
 canvas.width = 1280;
 canvas.height = 720;
 
-// Animation Speeds
+// Player
 const player_idle_animation_speed = 12;
-const enemy_idle_animation_speed = 4;
-const enemy_attack_animation_speed = 4;
 const running_animation_speed = 5;
-const shrine_animation_speed = 10;
-
-const enemy_directions = ['se', 'sw', 's', 'w', 'e', 'n', 'ne', 'nw'];
-let x1 = 0;
-let y1 = 0;
-let x2 = 0;
-let y2 = 0;
-let x = 0;
-let y = 0;
-
-// Speeds
 const runnin_speed = 4;
 
-let distance;
+const btnResume = document.querySelector('#resume_btn');
+const btnSave = document.querySelector('#save_btn');
+const btnLoad = document.querySelector('#load_btn');
+const btnExit = document.querySelector('#exit_btn');
 
+btnResume.addEventListener('click', togglePause);
+btnSave.addEventListener('click', beaconOfHope);
+btnLoad.addEventListener('click', () => { location.reload(); });
+
+// Shrine
+const shrine_animation_speed = 10;
+
+const chat = document.querySelector('#chat_ui');
+const text = document.querySelector('#text');
+const menu = document.querySelector('#menu');
+
+// Gosth
+const gosth_attack_animation_speed = 2;
+const gosth_idle_animation_speed = 4;
+let gosthFree = false;
+
+let isRunning = true;
+let mission_count = 0;
+let displayMessage = false;
+let message = "";
+let storyLineObject = {
+    9: 'slime',
+    13: 'monsterEgg',
+    17: 'bones'
+};
+// ----------------- Map Variables
+// Size of the map in tiles horizontally
+const MAP_TILES_WIDTH = 60;
+
+// Map Symbols for collisions and objects
+const apple_symbol = 1360;
+const collision_symbol = 1359;
+const bluePotion_symbol = 1364;
+const yellowPotion_symbol = 1365;
+const pinkPotion_symbol = 1366;
+const monsterEgg_symbol = 1361;
+const bones_symbol = 1368;
+const slime_symbol = 1362;
+
+// This is the container for all the player info being pulled from the database.
 let stats;
+let introduction = false;
+let current_mission = 0;
+let missionCompleted = true;
+let flaskIndx = 0;
 // Map Img
 const mapImg = new Image();
 mapImg.src = "/static/images/map.png";
@@ -35,14 +69,42 @@ mapImg.src = "/static/images/map.png";
 const foregroundImg = new Image();
 foregroundImg.src = '/static/images/overlayer.png';
 
+// Container for each attack check the damage and if it hit
 let playerDamage = {
-    hit:false,
-    damage:0
+    hit: false,
+    damage: 0
 };
-
+let playerInShrineRange = false;
+let playerInChaliceRange = false;
+// Objects Imgs
 const apple = new Image();
 apple.src = '/static/images/apple.png';
+const nightPotion = new Image();
+nightPotion.src = '/static/images/night_potion.png';
+const dayPotion = new Image();
+dayPotion.src = '/static/images/day_potion.png';
+const healthPotion = new Image();
+healthPotion.src = '/static/images/health_potion.png';
+const bonesIcon = new Image();
+bonesIcon.src = 'static/images/Bone.png';
+const blackPotion = new Image();
+blackPotion.src = 'static/images/black_potion.png';
+const slimeImg = new Image();
+slimeImg.src = '/static/images/slime.png';
+const monsterEggImg = new Image();
+monsterEggImg.src = '/static/images/monster_egg.png';
+const flaskImg = new Image();
+flaskImg.src = '/static/images/flask.png';
+const fountainFlaskImg = new Image();
+fountainFlaskImg.src = '/static/images/fountain_flask.png';
+const chaliceFlask = new Image();
+chaliceFlask.src = '/static/images/chalice_flask.png';
+const slimeFlaskImg = new Image();
+slimeFlaskImg.src = '/static/images/slime_flask.png';
+
 // Player Img
+const playerDeathImg = new Image();
+playerDeathImg.src = '/static/images/WarriorDownDeath.png';
 const playerDownImg = new Image();
 playerDownImg.src = '/static/images/WarriorDownWalk.png';
 const playerUpImg = new Image();
@@ -67,6 +129,9 @@ const playerUpAttack = new Image();
 playerUpAttack.src = '/static/images/WarriorUpAttack01.png';
 const playerRightAttack = new Image();
 playerRightAttack.src = '/static/images/WarriorRightAttack01.png';
+
+const bubbleImg = new Image();
+bubbleImg.src = '/static/images/bubble.png';
 
 // Enemy Img
 const enemyAttackE = new Image();
@@ -104,42 +169,49 @@ enemyIdleSW.src = 'static/images/Enemy-Melee-Idle-SW.png';
 const enemyIdleW = new Image();
 enemyIdleW.src = 'static/images/Enemy-Melee-Idle-W.png';
 
+// Efects
+const pink_effect = new Image();
+pink_effect.src = '/static/images/pink_effect.png';
+const night_effect = new Image();
+night_effect.src = '/static/images/night_effect.png';
+const day_effect = new Image();
+day_effect.src = '/static/images/day_effect.png';
+const reborn = new Image();
+reborn.src = '/static/images/reborn.png';
+const dark_myst = new Image();
+dark_myst.src = '/static/images/dark_myst.png';
+
 // Shrine Img
 const shrineImg = new Image();
 shrineImg.src = 'static/images/shrine.png';
 
+// Golden Chalice
+const goldeChaliceImg = new Image();
+goldeChaliceImg.src = 'static/images/golden_chalice.png'
+
 // Merchant Img
 const merchantImg = new Image();
 merchantImg.src = 'static/images/NPC Merchant-idle.png';
-
-// Mineral
-const mineralImg = new Image();
-mineralImg.src = 'static/images/rock 2.png';
-
-// Icons
-const appleIcon = new Image();
-appleIcon.src = 'static/images/appleIcon.png';
+const merchantInterEntry = new Image();
+merchantInterEntry.src = 'static/images/NPC Merchant-interacting-entry.png';
+const merchantInterLoop = new Image();
+merchantInterLoop.src = 'static/images/NPC Merchant-interacting-loop.png';
+const merchantInterRest = new Image();
+merchantInterRest.src = 'static/images/NPC Merchant-interacting-rest.png';
+const goldenKeyImg = new Image();
+goldenKeyImg.src = '/static/images/key.png';
 
 // Luces azules
 const luzAzul = new Image();
 luzAzul.src = '/static/images/lucesAzules.png';
 
-// Map Symbols for collisions and objects
-const apple_symbol = 1360;
-const collision_symbol = 1359;
-
-// Size of the map in tiles
-const MAP_TILES_WIDTH = 60;
-
 const offset = {
     x: -1700,
     y: -1700
 }
-
-let enemybOut = true;
-
+let playerPower = 5;
+let playerInDanger = false;
 // ---------------------Time Variables
-let lucesAzules = false;
 let minutes = 0;
 let hours = 0;
 let clock = new Date();
@@ -168,7 +240,7 @@ const healthBar = document.querySelector('#healthbar');
 // Adding boudaries objects to the coordenates of the collision array
 const boundaries = [];
 // Adding apples objects to the coordenates of the apples array
-const apples = [];
+const items = [];
 // Count how many keys are being pressed
 let pressedKeys = 0;
 // Last key pressed
@@ -180,9 +252,9 @@ for (let i = 0; i < collisions.length; i += MAP_TILES_WIDTH) {
 }
 
 // Inserting all the apples coordenates in an array
-const apples_map = []
+const items_map = []
 for (let i = 0; i < apples_json.length; i += MAP_TILES_WIDTH) {
-    apples_map.push(apples_json.slice(i, MAP_TILES_WIDTH + i))
+    items_map.push(apples_json.slice(i, MAP_TILES_WIDTH + i))
 }
 
 // Creating the backGround Object
@@ -214,8 +286,8 @@ const blueLights = new Sprite({
 //   Creating Player object
 const player = new Player({
     position: {
-        x: canvas.width / 2,
-        y: canvas.height / 2 + 50
+        x: canvas.width / 2 - 72,
+        y: canvas.height / 2 - 72
     },
     image: playerDownIdlImg,
     frames: {
@@ -228,6 +300,7 @@ const player = new Player({
     health: 100,
     velocity: runnin_speed,
     sprites: {
+        death: playerDeathImg,
         down: playerDownImg,
         up: playerUpImg,
         left: playerLeftImg,
@@ -249,25 +322,28 @@ const gosth = new Enemy({
         y: 1550
     },
     image: enemyIdleS,
-    attack_animation_speed: 3,
+    attack_animation_speed: gosth_attack_animation_speed,
     attack_frames: 24,
+    health: 100,
     frames: {
         max: 12,
-        animation_speed: enemy_idle_animation_speed
+        animation_speed: gosth_idle_animation_speed
     },
-    idle_animation_speed: enemy_idle_animation_speed,
+    idle_animation_speed: gosth_idle_animation_speed,
     idle_frames: 12,
     moving: false,
-    attack_reach : 60,
+    attack_reach: 60,
     velocity: 0.7,
-    mapLimit: {position: {
-        x: 2220,
-        y: 1400
-    } },
+    mapLimit: {
+        position: {
+            x: 2220,
+            y: 1400
+        }
+    },
     sounds: {
-        attack:enemy_attack_sound,
+        attack: enemy_attack_sound,
         hurt: null,
-        engaged:enemy_engage_sound,
+        engaged: enemy_engage_sound,
     },
     sprites: {
         down: enemyIdleS,
@@ -296,39 +372,121 @@ const shrine = new Sprite({
     },
     image: shrineImg,
     frames: {
+        rows: 1,
+        max: 8,
+        animation_speed: shrine_animation_speed
+    }
+});
+
+const bubble = new Sprite({
+    position: {
+        x: 660,
+        y: 260
+    },
+    image: bubbleImg
+});
+
+const golden_chalice = new Sprite({
+    position: {
+        x: 740,
+        y: 3200
+    },
+    image: goldeChaliceImg,
+    frames: {
+        rows: 1,
         max: 8,
         animation_speed: shrine_animation_speed
     }
 })
 
-const merchant = new Sprite({
+const coolEffect = new Sprite({
+    position: {
+        x: canvas.width / 2,
+        y: canvas.height / 5 -20
+    },
+    image: reborn,
+    frames: {
+        max: 5,
+        animation_speed: 3,
+        rows: 4
+    },
+    sprites: {
+        heal: pink_effect,
+        day: day_effect,
+        night: night_effect,
+        reborn: reborn
+    }
+})
+coolEffect.play = false;
+
+const darkness = new Sprite({
+    position: {
+        x: gosth.position.x - 100,
+        y: gosth.position.y - 100
+    },
+    image: dark_myst,
+    frames: {
+        max: 5,
+        animation_speed: 3,
+        rows: 4
+    }
+})
+darkness.play = false;
+
+const merchant = new Player({
     position: {
         x: 2930,
         y: 725
     },
+    health: false,
+    moving: false,
     image: merchantImg,
     frames: {
+        max: 8,
+        animation_speed: shrine_animation_speed
+    },
+    sprites: {
+        idle: merchantImg,
+        entry: merchantInterEntry,
+        loop: merchantInterLoop,
+        rest: merchantInterRest
+    },
+    idle_frames: 8,
+    idle_animation_speed: shrine_animation_speed
+})
+merchant.state = 'resting';
+merchant.goldenKeyOnDisplay = false;
+merchant.message = [];
+merchant.action = 'talk';
+
+const goldenKey = new Sprite({
+    position: {
+        x: 3020,
+        y: 830
+    },
+    image: goldenKeyImg,
+    frames: {
+        rows: 1,
         max: 8,
         animation_speed: shrine_animation_speed
     }
 })
 
-const mineral = new Sprite({
-    position: {
-        x: 3750,
-        y: 1090
-    },
-    image: mineralImg,
-    frames: {
-        max: 4,
-        animation_speed: shrine_animation_speed * 2.5
-    }
-})
 player.items = [null, null, null, null, null, null, null, null, null];
 const inventory = new Inventory({
     items: player.items,
     itemImages: {
-        apple: appleIcon
+        apple: apple,
+        bones: bonesIcon,
+        dayPotion: dayPotion,
+        nightPotion: nightPotion,
+        healthPotion: healthPotion,
+        flask: flaskImg,
+        fountainFlask: fountainFlaskImg,
+        chaliceFlask: chaliceFlask,
+        slime: slimeImg,
+        slimeFlask: slimeFlaskImg,
+        monsterEgg: monsterEggImg
     },
     state: 'hidden'
 })
@@ -340,29 +498,21 @@ window.addEventListener("load", () => {
     loading();
 })
 
-function beaconOfHope() {
-    if (gosth.engaged) return;
-    let user_data = {
-        "xLocation": backGround.position.x,
-        "yLocation": backGround.position.y,
-        "hour": hours
-    }
-    navigator.sendBeacon('/saveProgress', JSON.stringify(user_data));
-}
-
 async function gameStarts() {
-    // Save progress in case of window closing 
-    window.addEventListener("unload", beaconOfHope);
-
     let response = await fetch('/getStats');
-    stats = await response.json();
-
+    let user_stats = await response.json();
+    stats = user_stats[0];
+    user_stats[1].forEach(item => {
+        if (item.count != 0) {
+            inventory.add(item.name, item.count);
+        }
+    });
     none_staticMaps.forEach(movable => {
         movable.position.x = stats.xLocation;
         movable.position.y = stats.yLocation;
-    })
+    });
     hours = stats.hour;
-
+    current_mission = stats.progress;
     collision_map.forEach((row, i) => {
         row.forEach((symbol, j) => {
             if (symbol == collision_symbol) {
@@ -376,64 +526,122 @@ async function gameStarts() {
                     }))
             }
         })
-    })
-    apples_map.forEach((row, i) => {
+    });
+    items_map.forEach((row, i) => {
         row.forEach((symbol, j) => {
-            if (symbol == apple_symbol) {
-                apples.push({
+            if (symbol === apple_symbol) {
+                items.push({
                     position: {
                         x: j * Boundary.width,
                         y: i * Boundary.height
                     },
                     height: apple.height,
-                    width: apple.width
+                    width: apple.width,
+                    name: 'apple'
+                })
+            }
+            else if (symbol === bluePotion_symbol) {
+                items.push({
+                    position: {
+                        x: j * Boundary.width,
+                        y: i * Boundary.height
+                    },
+                    height: nightPotion.height,
+                    width: nightPotion.width,
+                    name: 'nightPotion'
+                })
+            }
+            else if (symbol === slime_symbol) {
+                items.push({
+                    position: {
+                        x: j * Boundary.width,
+                        y: i * Boundary.height
+                    },
+                    height: slimeImg.height,
+                    width: slimeImg.width,
+                    name: 'slime'
+                })
+            }
+            else if (symbol === bones_symbol) {
+                items.push({
+                    position: {
+                        x: j * Boundary.width,
+                        y: i * Boundary.height
+                    },
+                    height: bonesIcon.height,
+                    width: bonesIcon.width,
+                    name: 'bones'
+                })
+            }
+            else if (symbol === monsterEgg_symbol) {
+                items.push({
+                    position: {
+                        x: j * Boundary.width,
+                        y: i * Boundary.height
+                    },
+                    height: monsterEggImg.height,
+                    width: monsterEggImg.width,
+                    name: 'monsterEgg'
+                })
+            }
+            else if (symbol === yellowPotion_symbol) {
+                items.push({
+                    position: {
+                        x: j * Boundary.width,
+                        y: i * Boundary.height
+                    },
+                    height: dayPotion.height,
+                    width: dayPotion.width,
+                    name: 'dayPotion'
+                })
+            }
+            else if (symbol === pinkPotion_symbol) {
+                items.push({
+                    position: {
+                        x: j * Boundary.width,
+                        y: i * Boundary.height
+                    },
+                    height: healthPotion.height,
+                    width: healthPotion.width,
+                    name: 'healthPotion'
                 })
             }
         })
     })
     adjustLight();
-    staticMaps = [...boundaries, ...apples, shrine,merchant, mineral, gosth, gosth.mapLimit];
+    staticMaps = [...boundaries, ...items, shrine, merchant, gosth, gosth.mapLimit, goldenKey, darkness, golden_chalice];
     staticMaps.forEach(movable => {
         movable.position.x += stats.xLocation;
         movable.position.y += stats.yLocation;
     })
-    
-    
-    //    ----------------------Main refreshing function ---------------------------
-    function animate() {
-        window.requestAnimationFrame(animate)
-        // Draw background --------------------------------------------------------------------------
-        backGround.draw();
-        displayTime();
-        // Draw the shrine and play sound --------------------------------------------------------------------
-        shrine.draw();
-        merchant.draw();
-        play_shrine_sound();
-        // The commented function below is only for troubleshooting: displays the collision boxes for the terrain
-        //boundaries.forEach(boundary => { boundary.draw(); });
-        // Drawing the apple images whenever there is one in the map -----------------------------------------
-        apples.forEach(apple_item => {
-            if (apple_item != null) {
-                c.drawImage(apple, apple_item.position.x, apple_item.position.y);
-            }
-        });
-        if (lucesAzules) blueLights.draw();
-        // Draw player sprite -----------------------------------------------------------------------
-        if (enemybOut) {
-            if (!gosth.moving) gosth.navigate(player.position.x, player.position.y);
-            drawCharacters();
-        } else player.draw();
-        player.checkStatus();
-        // Draw all objects that are being shown on top of the player image -------------------------------
-        foreground.draw();
-        // Takes input to navigate the player through the map
-        if (!player.moving) player.navigate();
-        if (pressedKeys < 0) pressedKeys = 0;
-    }
+
     setTimeout(() => {
+        if (hours === 0) invokeGosth('in');
         animate();
     }, 3000);
 }
+
+//    ----------------------Main refreshing function ---------------------------
+function animate() {
+    if (isRunning) {
+        reqAnim = window.requestAnimationFrame(animate);
+    }
+    // Draw background --------------------------------------------------------------------------
+    displayTime();
+
+    objectsDrawing();
+    // The commented function below is only for troubleshooting: displays the collision boxes for the terrain
+    //boundaries.forEach(boundary => { boundary.draw(); });
+
+    //fillArea((gosth.position.x + 100), (gosth.position.y + 170), 50, 50)
+    // Draw player sprite -----------------------------------------------------------------------
+    player.checkStatus();
+    // Draw all objects that are being shown on top of the player image -------------------------------
+    // Takes input to navigate the player through the map
+    if (!player.moving) player.navigate();
+    if (pressedKeys < 0) pressedKeys = 0;
+}
+
 //    Assinging initial values to the keys
 const keys = {
     w: {
@@ -466,6 +674,7 @@ function rectangularCollision({ player1, object2 }) {
     )
 }
 window.addEventListener('keydown', (e) => {
+    if (player.health === 0) return;
     switch (e.key) {
         case 'w':
             if (!keys.w.pressed) { pressedKeys++; }
@@ -495,10 +704,50 @@ window.addEventListener('keydown', (e) => {
         case 'i':
             inventory.changeState();
             break;
+        case '1':
+            if (player.moving) return;
+            inventory.use(8);
+            break;
+        case '2':
+            if (player.moving) return;
+            inventory.use(7);
+            break;
+        case '3':
+            if (player.moving) return;
+            inventory.use(6);
+            break;
+        case '4':
+            if (player.moving) return;
+            inventory.use(5);
+            break;
+        case '5':
+            if (player.moving) return;
+            inventory.use(4);
+            break;
+        case '6':
+            if (player.moving) return;
+            inventory.use(3);
+            break;
+        case '7':
+            if (player.moving) return;
+            inventory.use(2);
+            break;
+        case '8':
+            if (player.moving) return;
+            inventory.use(1);
+            break;
+        case '9':
+            if (player.moving) return;
+            inventory.use(0);
+            break;
+        case 'Escape':
+            togglePause();
+
     }
 })
 
 window.addEventListener('keyup', (e) => {
+    if (player.health === 0) return;
     switch (e.key) {
         case 'w':
             pressedKeys--;
@@ -509,7 +758,7 @@ window.addEventListener('keyup', (e) => {
                 player.frames.max = 5;
                 player.frames.animation_speed = 12;
             }
-            break
+            break;
         case 'a':
             pressedKeys--;
             keys.a.pressed = false;
@@ -519,7 +768,7 @@ window.addEventListener('keyup', (e) => {
                 player.frames.max = 5;
                 player.frames.animation_speed = 12;
             }
-            break
+            break;
         case 's':
             pressedKeys--;
             keys.s.pressed = false;
@@ -529,7 +778,7 @@ window.addEventListener('keyup', (e) => {
                 player.frames.max = 5;
                 player.frames.animation_speed = 12;
             }
-            break
+            break;
         case 'd':
             pressedKeys--;
             keys.d.pressed = false;
@@ -539,7 +788,7 @@ window.addEventListener('keyup', (e) => {
                 player.frames.max = 5;
                 player.frames.animation_speed = 12;
             }
-            break
+            break;
     }
 })
 
@@ -619,16 +868,58 @@ player.navigate = function () {
 }
 
 player.interact = function () {
-    apples.forEach((apple_item, index) => {
-        if (apple_item != null) {
-            if(rectangularCollision({player1:player, object2:apple_item}))
-            {
-                console.log('picked up');
-                apples[index] = null;
-                inventory.add('apple');
+    items.forEach((value, index) => {
+        if (value != null) {
+            if (value.name === 'nightPotion' ||
+                value.name === 'dayPotion' ||
+                value.name === 'healthPotion' ||
+                value.name === 'apple' ||
+                value.name === storyLineObject[current_mission]) {
+                if (value.name === storyLineObject[current_mission] && hours > 4) {
+                    return;
+                }
+                else {
+                    let distance = findDistance({ player1: player, object2: value });
+                    if (distance < 50) {
+                        if (inventory.add(value.name, 1)) items[index] = null;
+                    }
+                }
             }
         }
     })
+    if (playerInShrineRange) {
+        inventory.items[flaskIndx] = {
+            name: 'fountainFlask',
+            count: 1
+        }
+        current_mission++;
+        playerInShrineRange = false;
+        inventory.update();
+    }
+    if (playerInChaliceRange) {
+        inventory.items[flaskIndx] = {
+            name: 'chaliceFlask',
+            count: 1
+        }
+        current_mission++;
+        playerInChaliceRange = false;
+        inventory.update();
+    }
+    // Recycling the health property of the player class since im not using it but it has
+    // nothing to do with health, just checking if the talk bubble is already open or not
+    if (merchant.state === 'interacting' || merchant.state === 'looping') {
+        missionCompleted = storyLine();
+        if (!merchant.health) {
+            chat.style.opacity = 1;
+            text.innerHTML = missions[current_mission];
+            if (missionCompleted) current_mission++;
+            else merchant.health = true;
+        } else {
+            chat.style.opacity = 1;
+            let rand_fact = Math.floor(Math.random() * 6);
+            text.innerHTML = randomFacts[rand_fact];
+        }
+    }
 }
 
 function willCrash(direction) {
@@ -661,11 +952,23 @@ function willCrash(direction) {
                     y: boundary.position.y + yDirection
                 }
             }
-        })) {
-            return true;
-        }
-
+        })) return true;
     }
+    if (hours != 0) return false;
+    let tempGosth = {
+        position:
+        {
+            x: gosth.position.x + 100 + xDirection,
+            y: gosth.position.y + 170 + yDirection
+        },
+        width: 50,
+        height: 50
+    };
+    if (rectangularCollision({
+        player1: player,
+        object2: tempGosth
+    })) return true;
+
     return false;
 }
 
@@ -680,18 +983,22 @@ player.attack = function () {
     player.frames.val = 0;
     switch (lastKey) {
         case 's':
+            gosthDamage('s');
             player.frames.lastSprite = player.sprites.downIdle;
             player.image = player.sprites.downAttack;
             break;
         case 'w':
+            gosthDamage('n');
             player.frames.lastSprite = player.sprites.upIdle;
             player.image = player.sprites.upAttack;
             break;
         case 'd':
+            gosthDamage('e');
             player.frames.lastSprite = player.sprites.rightIdle;
             player.image = player.sprites.rightAttack;
             break;
         case 'a':
+            gosthDamage('w');
             player.frames.lastSprite = player.sprites.leftIdle;
             player.image = player.sprites.leftAttack;
             break;
@@ -709,7 +1016,6 @@ function loading() {
     setTimeout(() => {
         loader.style.opacity = 0;
         loader.style.display = 'none';
-
         main.style.display = 'flex';
         setTimeout(() => {
             main.style.opacity = 1
@@ -729,14 +1035,31 @@ function loading() {
         bar.innerHTML = progress.toFixed(2) + '%';
     }
 }
-player.checkStatus = function(){
-    if (playerDamage.hit)
-    {
-        if (playerDamage.damage > player.health) playerDamage.damage = player.health;
-        player.health -= playerDamage.damage;
-        console.log(player.health);
+player.checkStatus = function () {
+    if (playerDamage.hit) {
+        if (playerDamage.damage > player.health) player.health = 0;
+        else player.health -= playerDamage.damage;
         healthBar.style.width = player.health + '%';
         playerDamage.hit = false;
+        if (player.health === 0) {
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+            window.cancelAnimationFrame(reqAnim);
+            coolEffect.frames.max = 5;
+            coolEffect.frames.rows = 4;
+            coolEffect.frames.val = 0;
+            coolEffect.frames.row = 0;
+            coolEffect.frames.animation_speed = 3;
+            coolEffect.image = coolEffect.sprites.reborn;
+            player.moving = true;
+            player.frames.val = 0;
+            player.image = player.sprites.death;
+            player.frames.animation_speed = 12;
+            player.lastSprite = player.sprites.death;
+            player.frames.max = 5;
+            death();
+        }
     }
 }
 
@@ -785,27 +1108,463 @@ function drawCharacters() {
     }
 }
 
-inventory.add = function(item){
+inventory.add = function (item, quantity) {
     let picked = false;
     inventory.items.forEach((invItem, index) => {
-        if (invItem!=null){
-            if (invItem.name === item){
+        if (invItem != null) {
+            if (invItem.name === item) {
                 invItem.count++;
                 picked = true;
             }
-        }else {nextFreeSlot = index;console.log(nextFreeSlot);}
+        } else { nextFreeSlot = index; }
     });
-    if(picked) {inventory.update();return true;}
-    else if (inventory.items[nextFreeSlot]!=null){
-        console.log("Inventory Full");
+    if (picked) { inventory.update(); return true; }
+    else if (inventory.items[nextFreeSlot] != null) {
+        message = "Inventory Full";
+        displayMessage = true;
+        setTimeout(() => {
+            displayMessage = false;
+        }, 3000);
         return false;
-    } else {
-        inventory.items[nextFreeSlot] = {
-            name: item,
-            count: 1
+    }
+    else if (item === 'slime') {
+        inventory.items[flaskIndx] = {
+            name: 'slimeFlask',
+            count: quantity
         }
-        console.log(nextFreeSlot);
+        current_mission++;
         inventory.update();
         return true;
     }
+    else {
+        inventory.items[nextFreeSlot] = {
+            name: item,
+            count: quantity
+        }
+        if (item === 'flask') flaskIndx = nextFreeSlot;
+        if (item === 'monsterEgg') current_mission++;
+        if (item === 'bones') current_mission++;
+        inventory.update();
+        return true;
+    }
+
+}
+
+function beaconOfHope() {
+    let user_data = {
+        "xLocation": backGround.position.x,
+        "yLocation": backGround.position.y,
+        "hour": hours,
+        "health": player.health,
+        "progress": current_mission,
+        "inventory": inventory.items
+    }
+    navigator.sendBeacon('/saveProgress', JSON.stringify(user_data));
+    togglePause();
+}
+
+function merchant_interaction() {
+    if (merchant.moving) return;
+    let distance = findDistance({ player1: player, object2: merchant });
+
+    if (distance < 150) {
+        c.beginPath();
+        c.moveTo((merchant.position.x + merchant.width / 2 - 50), (merchant.position.y + merchant.height / 2 - 50));
+        c.lineTo((merchant.position.x + merchant.width / 2 - 70), (merchant.position.y + merchant.height / 2 - 70));
+        c.strokeStyle = "white";
+        c.font = '20px Papyrus';
+        c.strokeText(merchant.action, (merchant.position.x + merchant.width / 2 - 100), (merchant.position.y + merchant.height / 2 - 75));
+        c.stroke();
+    }
+
+    if (distance < 105 && merchant.state === 'resting') {
+        merchant.frames.animation_speed = 6;
+        merchant.state = 'interacting';
+        merchant.image = merchant.sprites.entry;
+        merchant.moving = true;
+        merchant.frames.lastSprite = merchant.sprites.loop;
+        merchant.frames.val = 0;
+        merchant.frames.max = 8;
+    }
+    else if (distance < 105 && merchant.state === 'interacting') {
+        merchant.goldenKeyOnDisplay = true;
+        merchant.frames.animation_speed = 6;
+        merchant.state = 'looping';
+        merchant.frames.val = 0;
+        merchant.frames.max = 8;
+    }
+    else if (distance > 105 && merchant.state === 'interacting' || distance > 105 && merchant.state === 'looping') {
+        merchant.goldenKeyOnDisplay = false;
+        chat.style.opacity = 0;
+        merchant.health = false;
+        merchant.frames.animation_speed = 8;
+        merchant.state = 'exiting';
+        merchant.image = merchant.sprites.rest;
+        merchant.frames.lastSprite = merchant.sprites.idle;
+        merchant.moving = true;
+        merchant.frames.val = 0;
+        merchant.frames.max = 4;
+    }
+    else if (merchant.state === 'exiting') {
+        merchant.frames.animation_speed = 8;
+        merchant.state = 'resting';
+        merchant.frames.val = 0;
+        merchant.frames.max = 8;
+    }
+}
+
+function fillArea(x, y, w, h, color) {
+    c.fillStyle = color;
+    c.fillRect(x, y, w, h);
+}
+
+function objectsDrawing() {
+    backGround.draw();
+    // Shrine Sound Effect
+    play_shrine_sound();
+    // Draw Shrine
+    shrine.draw();
+    if (gosthFree && gosth.engaged) gosth.ui.style.opacity = 1;
+    else gosth.ui.style.opacity = 0;
+    // Map items
+    items.forEach(value => {
+        if (value != null) {
+            if (value.name === 'nightPotion' ||
+                value.name === 'dayPotion' ||
+                value.name === 'healthPotion' ||
+                value.name === 'apple' ||
+                value.name === storyLineObject[current_mission]) {
+                if (value.name === storyLineObject[current_mission] && hours > 4) return;
+                c.drawImage(inventory.itemImages[value.name], value.position.x, value.position.y);
+                let distance = findDistance({ player1: player, object2: value });
+                if (distance < 100) {
+                    c.beginPath();
+                    c.moveTo((value.position.x + value.width / 2 - 15), (value.position.y + value.height / 2 - 15));
+                    c.lineTo((value.position.x + value.width / 2 - 30), (value.position.y + value.height / 2 - 30));
+                    c.strokeStyle = "white";
+                    c.font = '15px Papyrus';
+                    c.strokeText("pick up?", (value.position.x + value.width / 2 - 50), (value.position.y + value.height / 2 - 40));
+                    c.stroke();
+                }
+            }
+        }
+    });
+    if (current_mission === 11 && hours > 8 && hours < 18) {
+        let distance = findDistance({ player1: player, object2: shrine });
+        if (distance < 200) {
+            c.beginPath();
+            c.moveTo((shrine.position.x + shrine.width / 2 - 30), (shrine.position.y + shrine.height / 2 - 15));
+            c.lineTo((shrine.position.x + shrine.width / 2 - 30), (shrine.position.y + shrine.height / 2 - 30));
+            c.strokeStyle = "blue";
+            c.font = '25px Papyrus';
+            c.strokeText("Fill bottle?", (shrine.position.x + shrine.width / 2 - 50), (shrine.position.y + shrine.height / 2 - 40));
+            c.stroke();
+        }
+        if (distance < 100) playerInShrineRange = true;
+    }
+    if (current_mission === 15 && hours > 8 && hours < 18) {
+        let distance = findDistance({ player1: player, object2: golden_chalice });
+        if (distance < 200) {
+            c.beginPath();
+            c.moveTo((golden_chalice.position.x + golden_chalice.width / 2 - 30), (golden_chalice.position.y + golden_chalice.height / 2 - 15));
+            c.lineTo((golden_chalice.position.x + golden_chalice.width / 2 - 30), (golden_chalice.position.y + golden_chalice.height / 2 - 30));
+            c.strokeStyle = "red";
+            c.font = '25px Papyrus';
+            c.strokeText("Fill bottle?", (golden_chalice.position.x + golden_chalice.width / 2 - 50), (golden_chalice.position.y + golden_chalice.height / 2 - 40));
+            c.stroke();
+        }
+        if (distance < 100) playerInChaliceRange = true;
+    }
+    if (displayMessage) {
+        bubble.draw();
+        c.strokeStyle = "black";
+        c.font = '15px Papyrus';
+        c.strokeText(message, bubble.position.x + 5, bubble.position.y + 18);
+        c.stroke();
+    }
+    merchant.draw();
+    // Interact with merchant
+    merchant_interaction();
+    // Draw golden Key
+    if (merchant.goldenKeyOnDisplay) goldenKey.draw();
+    // draw merchant
+    // Draw blue lights
+    if (hours === 0) blueLights.draw();
+    coolEffect.interact();
+    darkness.interact();
+    if (gosthFree) {
+        if (!gosth.moving) gosth.navigate(player.position.x, player.position.y);
+        drawCharacters();
+    } else player.draw();
+    foreground.draw();
+    golden_chalice.draw();
+}
+
+coolEffect.interact = function () {
+    if (!coolEffect.play) return;
+    coolEffect.draw();
+    if (coolEffect.frames.row === (coolEffect.frames.rows - 1) &&
+        coolEffect.frames.val === (coolEffect.frames.max - 1)) coolEffect.play = false;
+}
+darkness.interact = function () {
+    if (!darkness.play) return;
+    darkness.draw();
+    if (darkness.frames.row === (darkness.frames.rows - 1) &&
+        darkness.frames.val === (darkness.frames.max - 1)) darkness.play = false;
+}
+
+inventory.use = function (index) {
+    if (inventory.items[index] === null) return;
+    else if (inventory.items[index].name === 'nightPotion' ||
+        inventory.items[index].name === 'apple' ||
+        inventory.items[index].name === 'dayPotion' ||
+        inventory.items[index].name === 'healthPotion') {
+        inventory.items[index].count--;
+        switch (inventory.items[index].name) {
+            case 'dayPotion':
+                coolEffect.play = true;
+                coolEffect.frames.max = 5;
+                coolEffect.frames.rows = 3;
+                coolEffect.frames.val = 0;
+                coolEffect.frames.row = 0;
+                coolEffect.frames.animation_speed = 6;
+                coolEffect.image = coolEffect.sprites.day;
+                if (gosthFree) invokeGosth('out');
+                hours = 12;
+                adjustLight();
+                break;
+            case 'nightPotion':
+                coolEffect.play = true;
+                coolEffect.frames.max = 5;
+                coolEffect.frames.rows = 4;
+                coolEffect.frames.val = 0;
+                coolEffect.frames.row = 0;
+                coolEffect.frames.animation_speed = 6;
+                coolEffect.image = coolEffect.sprites.night;
+                hours = 0;
+                if (!gosth.engaged) invokeGosth('in');
+                adjustLight();
+                break;
+            case 'healthPotion':
+                coolEffect.play = true;
+                coolEffect.frames.max = 5;
+                coolEffect.frames.rows = 6;
+                coolEffect.frames.val = 0;
+                coolEffect.frames.row = 0;
+                coolEffect.frames.animation_speed = 3;
+                coolEffect.image = coolEffect.sprites.heal;
+                player.health = 100;
+                healthBar.style.width = player.health + '%';
+                break;
+            case 'apple':
+                player.health += 15;
+                if (player.health > 100) player.health = 100;
+                healthBar.style.width = player.health + '%';
+                break;
+        }
+        inventory.update();
+    }
+    else {
+        message = "Can't use this!";
+        displayMessage = true;
+        setTimeout(() => {
+            displayMessage = false;
+        }, 3000);
+    }
+}
+
+function death() {
+    window.requestAnimationFrame(death);
+    if (!coolEffect.play && !player.moving) {
+        coolEffect.play = true;
+        coolEffect.frames.val = 0;
+        coolEffect.frames.row = 0;
+    }
+    if (!player.moving) { player.image = player.sprites.death, player.frames.val = 4; player.moving; player.frames.elapsed = 0 }
+    backGround.draw();
+    displayTime();
+    player.draw();
+    gosth.draw();
+    objectsDrawing();
+}
+
+function togglePause() {
+    // toggle the value of isRunning
+    isRunning = !isRunning;
+    // call animate() if working
+    if (isRunning) {
+        menu.style.opacity = 0;
+        animate();
+    }
+    else {
+        menu.style.opacity = 1;
+    }
+}
+
+function findDistance({ player1, object2 }) {
+    let x = object2.position.x + object2.width / 2 - (player1.position.x + player1.width / 2);
+    let y = object2.position.y + object2.height / 2 - (player1.position.y + player1.height / 2);
+    let distance = Math.sqrt(((x ** 2) + (y ** 2)));
+/*
+    c.beginPath();
+    c.moveTo((object2.position.x + object2.width / 2), (object2.position.y + object2.height / 2));
+    c.lineTo((player1.position.x + player1.width / 2), (player1.position.y + player1.height / 2));
+    c.stroke();*/
+
+    return distance;
+}
+
+function gosthDamage(direc) {
+    setTimeout(() => {
+        let newDistance = findDistance({ player1: player, object2: gosth });
+        if (newDistance < 100) {
+            let y1 = (gosth.position.y + gosth.height - 50);
+            let y2 = (player.position.y + player.height - 35);
+            let x1 = (gosth.position.x + gosth.width / 2);
+            let x2 = (player.position.x + player.width / 2);
+            switch (direc) {
+                case 'n':
+                    if (y1 < y2 && Math.abs(x2 - x1) < 35 && newDistance < 100) { gosth.health -= playerPower; }
+                    break;
+                case 's':
+                    if (y1 > y2 && Math.abs(x2 - x1) < 35 && newDistance < 40) { gosth.health -= playerPower; }
+                    break;
+                case 'e':
+                    if (x1 > x2 && Math.abs(y2 - y1) < 25 && newDistance < 90) { gosth.health -= playerPower; }
+                    break;
+                case 'w':
+                    if (x1 < x2 && Math.abs(y2 - y1) < 25 && newDistance < 90) { gosth.health -= playerPower; }
+                    break;
+            }
+        }
+    }, 300);
+}
+
+function invokeGosth(direc) {
+    darkness.position.x = gosth.position.x - 100;
+    darkness.position.y = gosth.position.y - 100;
+    if (direc === 'in' && !gosthFree) {
+        gosth.health = 100;
+        darkness.play = true;
+        darkness.frames.val = 0;
+        darkness.frames.row = 0;
+        setTimeout(() => {
+            gosthFree = true;
+        }, 1100);
+    } else {
+        gosthFree = false;
+        gosth.engaged = false;
+        darkness.play = true;
+        darkness.frames.val = 0;
+        darkness.frames.row = 0;
+    }
+}
+
+function storyLine() {
+    let completed = false;
+    if (current_mission <= 6) return true;
+    else if (current_mission === 7) {
+        inventory.items.forEach(item => {
+            if (item != null) {
+                if (item.name === 'apple' && item.count >= 3) {
+                    item.count -= 3;
+                    merchant.health = false;
+                    inventory.update();
+                    completed = true;
+                }
+            }
+        });
+    } else if (current_mission === 8) {
+        setTimeout(() => {
+            inventory.add('nightPotion', 1);
+            inventory.add('flask', 1);
+            inventory.update();
+        }, 3000);
+        completed = true;
+    }
+    else if (current_mission === 10) {
+        inventory.items.forEach(item => {
+            if (item != null) {
+                if (item.name === 'slimeFlask') {
+                    item.count = 0;
+                    merchant.health = false;
+                    inventory.update();
+                    setTimeout(() => {
+                        inventory.add('dayPotion', 1);
+                        inventory.add('flask', 1);
+                        inventory.update();
+                    }, 3000);
+                    completed = true;
+                }
+            }
+        });
+    }
+    else if (current_mission === 12) {
+        inventory.items.forEach(item => {
+            if (item != null) {
+                if (item.name === 'fountainFlask') {
+                    item.count = 0;
+                    console.log(item);
+                    merchant.health = false;
+                    inventory.update();
+                    setTimeout(() => {
+                        inventory.add('nightPotion', 1);
+                        inventory.update();
+                    }, 2000);
+                    completed = true;
+                }
+            }
+        });
+    }
+    else if (current_mission === 14) {
+        inventory.items.forEach(item => {
+            if (item != null) {
+                if (item.name === 'monsterEgg') {
+                    item.count = 0;
+                    merchant.health = false;
+                    inventory.update();
+                    setTimeout(() => {
+                        inventory.add('flask', 1);
+                        inventory.add('dayPotion', 1);
+                        inventory.update();
+                    }, 2000);
+                    completed = true;
+                }
+            }
+        });
+    }
+    else if (current_mission === 16) {
+        inventory.items.forEach(item => {
+            if (item != null) {
+                if (item.name === 'chaliceFlask') {
+                    item.count = 0;
+                    merchant.health = false;
+                    inventory.update();
+                    completed = true;
+                }
+            }
+        });
+    }
+    else if (current_mission === 18) {
+        inventory.items.forEach(item => {
+            if (item != null) {
+                if (item.name === 'bones') {
+                    item.count = 0;
+                    merchant.health = false;
+                    inventory.update();
+                    completed = true;
+                }
+            }
+        });
+    }
+    else if (current_mission === 19) {
+        completed = true;
+        setTimeout(() => {
+            inventory.add('nightPotion', 1);
+            inventory.update();
+            playerPower = 20;
+            gosth.power = 30;
+        }, 2000);
+    } else return false;
+    return completed;
 }

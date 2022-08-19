@@ -5,6 +5,10 @@ function displayTime() {
         hours++;
         if (hours === 24) {
             hours = 0;
+            invokeGosth();
+        }
+        if (hours === 3){
+            invokeGosth('out');
         }
         adjustLight();
         hourAdded = true;
@@ -18,12 +22,10 @@ function displayTime() {
 function adjustLight() {
     switch (hours) {
         case 0:
-            lucesAzules = true;
             time_layer.style.backgroundColor = nightColor;
             game_layer.style.opacity = 0.3;
             break;
         case 1:
-            lucesAzules = false;
             time_layer.style.backgroundColor = nightColor;
             game_layer.style.opacity = 0.3;
             break;

@@ -128,6 +128,8 @@ def register():
             query = "INSERT INTO progress (progress_id, location_x, location_y, health, progress, hour) VALUES (?, ?, ?, ?, ?, ?)"
             session["user_id"] = rows[0][0]
             db.execute(query, (session['user_id'], -1700, -1700, 100, 0, 8))
+            query = "INSERT INTO inventory (inventory_id, apple,bones,dayPotion,nightPotion,healthPotion,flask,fountainFlask,chaliceFlask,slimeFlask,monsterEgg) VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+            db.execute(query, (session['user_id'],0,0,0,0,0,0,0,0,0,0))
             game_db.commit()
             # Redirect user to home page
             return redirect("/")
@@ -140,7 +142,11 @@ def register():
 @app.route("/play")
 @login_required
 def play():
-        return render_template("gameOn.html")
+    with sqlite3.connect('game.db') as game_db:
+        db = game_db.cursor()
+        row = db.execute("SELECT username FROM users WHERE id = ?", (session['user_id'],),).fetchall()
+        user= row[0][0]
+        return render_template("gameOn.html",user=user)
 
 # ----------------------------------------------------------------Initialize Game-------------------------------
 @app.route("/getStats")
@@ -150,13 +156,28 @@ def getStats():
         db = game_db.cursor()
         row = db.execute("SELECT * FROM progress WHERE progress_id = ?", (session['user_id'],),).fetchall()
         user_data = {
-            'xLocation': row[0][1],
+            'xLocation': row[0][3],
             'yLocation': row[0][2],
-            'health': row[0][3],
+            'health': row[0][5],
             'progress':row[0][4],
-            'hour': row[0][5]
+            'hour': row[0][1]
         }
-        return jsonify(user_data)
+        row = db.execute("SELECT * FROM inventory WHERE inventory_id = ?", (session['user_id'],),).fetchall()
+        inventory = [
+            {'name':'apple', 'count': row[0][1]},
+            {'name':'bones','count': row[0][2]},
+            {'name':'dayPotion','count': row[0][3]},
+             {'name':'nightPotion','count': row[0][4]},
+            {'name':'healthPotion','count': row[0][5]},
+            {'name':'flask','count': row[0][6]},
+            {'name':'fountainFlask','count': row[0][7]},
+            {'name':'chaliceFlask','count': row[0][8]},
+            {'name':'slimeFlask','count': row[0][9]},
+            {'name':'monsterEgg','count': row[0][10]},
+        ]
+        row = db.execute("SELECT * FROM inventory WHERE inventory_id = ?", (session['user_id'],),).fetchall()
+        print(row)
+        return jsonify(user_data,inventory)
 
 # ----------------------------------------------------------------Logout-------------------------------
 @app.route("/logout")
@@ -201,12 +222,21 @@ def saveProgress():
         request_data = request.get_data()
         json_string = str(request_data)
         user_data = json.loads(json_string[2:-1])
+        print(user_data)
         with sqlite3.connect('game.db') as game_db:
             db = game_db.cursor()
             # Save location in db
-            query = "UPDATE progress SET location_x = ?,location_y = ?, hour = ? WHERE progress_id = ?"
-            db.execute(query, (user_data['xLocation'], user_data['yLocation'], user_data['hour'], session['user_id']))
-            print(user_data['hour'])
+            query = "UPDATE progress SET location_x = ?,location_y = ?, hour = ?, progress = ? WHERE progress_id = ?"
+            db.execute(query, (user_data['xLocation'], user_data['yLocation'], user_data['hour'], user_data['progress'],session['user_id']))
+            query = "UPDATE inventory SET apple=?,bones=?,dayPotion=?,nightPotion=?,healthPotion=?,flask=?,fountainFlask=?,chaliceFlask=?,slimeFlask=?,monsterEgg=? WHERE inventory_id = ?"
+            db.execute(query, (0,0,0,0,0,0,0,0,0,0,session['user_id']))
+            for item in user_data['inventory']:
+                if item != None:
+                    name = item['name']
+                    # Making sure no special characters are inserted for SQL injections
+                    if name.isalpha():
+                        query = "UPDATE inventory SET " + name + " = ? WHERE inventory_id = ?"
+                        db.execute(query, (item['count'], session['user_id']))
             game_db.commit()
             return ('',200)
 

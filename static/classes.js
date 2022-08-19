@@ -1,12 +1,12 @@
 class Sprite {
-    constructor({ position, velocity, image, frames = { max: 1, animation_speed: 10 }, sprites }) {
+    constructor({ position, velocity, image, frames = { max: 1, animation_speed: 10, rows:1 }, sprites }) {
         this.position = position;
         this.image = image;
-        this.frames = { ...frames, val: 0, elapsed: 0 };
+        this.frames = { ...frames, val: 0, elapsed: 0, row:0 };
         this.velocity = velocity;
         this.image.onload = () => {
             this.width = this.image.width / this.frames.max
-            this.height = this.image.height
+            this.height = this.image.height / this.frames.rows
         };
         this.sprites = sprites;
     }
@@ -15,18 +15,23 @@ class Sprite {
         c.drawImage(
             this.image,
             this.frames.val * this.width,
-            0,
+            this.frames.row * this.height,
             this.image.width / this.frames.max,
-            this.image.height,
+            this.image.height / this.frames.rows,
             this.position.x,
             this.position.y,
             this.image.width / this.frames.max,
-            this.image.height
+            this.image.height / this.frames.rows
         )
 
         if (this.frames.max > 1) this.frames.elapsed++
         if (this.frames.elapsed % this.frames.animation_speed === 0) {
             if (this.frames.val < this.frames.max - 1) this.frames.val++;
+            else if(this.frames.rows > 1) {
+                this.frames.row++;
+                this.frames.val=0;
+                if (this.frames.row === this.frames.rows) this.frames.row = 0;
+            }
             else this.frames.val = 0;
         }
 
@@ -109,26 +114,32 @@ class Inventory {
         this.items.forEach((value, index) => {
             let icon;
             if (value != null) {
+                if (value.count === 0){
+                    this.slots[8-index].removeChild(this.slots[8-index].firstElementChild);
+                    this.slots[8 - index].innerHTML = "";
+                    this.items[index] = null;
+                } else {
                 icon = this.itemImages[value.name];
                 this.slots[8 - index].innerHTML = value.count;
                 this.slots[8 - index].appendChild(icon);
+                }
             }
         })
     }
 
     changeState() {
         if (inventory.state === 'hidden') {
-            this.ui.style.display = "flex";
+            this.ui.style.opacity = 1;
             inventory.state = 'shown';
         } else {
-            this.ui.style.display = "none";
+            this.ui.style.opacity = 0;
             inventory.state = 'hidden';
         }
     }
 }
 
 class Enemy {
-    constructor({ position, mapLimit, attack_reach, sounds, velocity, attack_frames, attack_animation_speed, image, frames = { max: 1, animation_speed: 10 }, sprites, moving, idle_animation_speed, idle_frames }) {
+    constructor({ position, mapLimit, health,attack_reach, sounds, velocity, attack_frames, attack_animation_speed, image, frames = { max: 1, animation_speed: 10 }, sprites, moving, idle_animation_speed, idle_frames }) {
         this.position = position;
         this.image = image;
         this.mapLimit = mapLimit;
@@ -136,6 +147,7 @@ class Enemy {
         this.frames = { ...frames, val: 0, elapsed: 0, lastSprite: image };
         this.velocity = velocity;
         this.moving = moving;
+        this.health = health;
         this.attack_animation_speed = attack_animation_speed;
         this.image.onload = () => {
             this.width = this.image.width / this.frames.max
@@ -152,13 +164,17 @@ class Enemy {
         this.playerYpos = 0;
         this.playerW = 144;
         this.playerH = 144;
+        this.power = 50;
         this.x = 0;
         this.y = 0;
         this.beforeAttackDirection = 'n';
         this.distance = 0;
+        this.ui = document.querySelector('#portrait_wraper_gosth');
+        this.health_bar = document.querySelector('#gosth_healthbar');
     }
 
     draw() {
+        this.health_bar.style.height = this.health + "%";
         c.drawImage(
             this.image,
             this.frames.val * this.width,
@@ -188,6 +204,11 @@ class Enemy {
     }
 
     navigate(playerX, playerY) {
+        if(this.moving) return;
+        if(this.health <= 0) {
+            this.health = 0;
+
+        }
         this.playerXpos = playerX;
         this.playerYpos = playerY;
         this.updatePlayerDistance();
@@ -265,11 +286,12 @@ class Enemy {
         this.beforeAttackDirection = this.direction;
         setTimeout(() => {
             this.updatePlayerDistance();
-            if (this.direction === this.beforeAttackDirection && this.distance <= this.attack_reach) {
+            this.direction = this.findPlayer();
+            if (this.direction === this.beforeAttackDirection && this.distance <= (this.attack_reach * 2)) {
                 playerDamage.hit = true;
-                playerDamage.damage = 40;
+                playerDamage.damage = this.power;
             }
-        }, 700);
+        }, 400);
         switch (this.direction) {
             case 's':
                 this.frames.lastSprite = this.sprites.down;
@@ -349,24 +371,28 @@ class Enemy {
         if (xPosition < this.mapLimit.position.x) {
             temp_dire = ['ne', 'e', 'se'];
             this.direction = temp_dire[random_direction];
+            playerInDanger = false;
             this.engaged = false;
             return true;
         }
-        else if (xPosition + this.width > this.mapLimit.position.x + 980) {
+        else if (xPosition + this.width > this.mapLimit.position.x + 2000) {
             temp_dire = ['nw', 'w', 'sw'];
             this.direction = temp_dire[random_direction];
+            playerInDanger = false;
             this.engaged = false;
             return true;
         }
         else if (yPosition < this.mapLimit.position.y) {
             temp_dire = ['sw', 's', 'se'];
             this.direction = temp_dire[random_direction];
+            playerInDanger = false;
             this.engaged = false;
             return true;
         }
-        else if (yPosition + this.height > this.mapLimit.position.y + 650) {
+        else if (yPosition + this.height > this.mapLimit.position.y + 2000) {
             temp_dire = ['nw', 'n', 'ne'];
             this.direction = temp_dire[random_direction];
+            playerInDanger = false;
             this.engaged = false;
             return true;
         }
@@ -382,18 +408,20 @@ class Enemy {
 
     playerInEngagingZone() {
         if (this.playerXpos > this.mapLimit.position.x &&
-            this.playerXpos + this.playerW < this.mapLimit.position.x + 980 &&
+            this.playerXpos + this.playerW < this.mapLimit.position.x + 2000 &&
             this.playerYpos > this.mapLimit.position.y &&
-            this.playerYpos + this.playerH < this.mapLimit.position.y + 650) {
+            this.playerYpos + this.playerH < this.mapLimit.position.y + 2000) {
             return true;
         }
         else {
+            playerInDanger = false;
             this.engaged = false;
             return false;
         }
     }
 
     engage() {
+        playerInDanger = true;
         this.sounds.engaged.play();
         this.engaged = true;
     }

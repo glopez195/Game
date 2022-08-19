@@ -26,16 +26,59 @@ Play
     <canvas id="game_layer"></canvas>
     <div id='UI'>
         <div id="health_bar_wrapper">
-            <div id="portrait_wraper">
-                <div id="portrait_border">
-                    <img src="/static/images/knight_portrait.png" height="90" width="90">
+            <div id="chat_ui" class="portrait_wraper merchant_wrapper">
+                <div id="portrait_border" class="merchant">
+                    <img src="/static/images/merchant_portrait.png" height="105" width="105">
+                </div>
+                <div id="chat_wrapper">
+                    <div id="chat">
+                        Merchant:<br>
+                        <span id="text"></span>
+                    </div>
+                    <div
+                        style="border-top: 1px solid black;display: flex; justify-content: flex-end;padding:5px 10px 10px;color:black;">
+                        (F) --> </div>
                 </div>
             </div>
-            <div id="health_bar_border">
-                <div id="healthbar"></div>
+            <div class="portrait_wraper">
+                <div id="portrait_border">
+                    <img src="/static/images/warrior_portrait.png" height="105" width="105">
+                </div>
+                <div style="
+                    display: flex;
+                    flex-direction: column;
+                ">
+                    <div style="height: 100%;display:flex;color: aliceblue;font-size: large;padding-left: 20px;">
+                        {{user}}
+                    </div>
+                    <div id="health_bar_border">
+                        <div id="healthbar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="menu_wrapper">
+            <div id="menu">
+                <h1 style="color:white;font-size: 50px;padding: 30px 0 10px 0;margin-top: 20px;">Menu</h1>
+                <div id="controls">
+                    <button id="resume_btn" type="button" class="btn btn-warning btn-lg g-btn">Resume</button>
+                    <button id="save_btn" type="button" class="btn btn-warning btn-lg g-btn">Save</button>
+                    <button id="load_btn" type="button" class="btn btn-warning btn-lg g-btn">Load from last
+                        saved</button>
+                    <a href="/"><button id="exit_btn" type="button"
+                            class="btn btn-warning btn-lg g-btn">Exit</button></a>
+                </div>
             </div>
         </div>
         <div id="inventory_wrapper">
+            <div id="portrait_wraper_gosth">
+                <div id="portrait_border_gosth">
+                    <img src="/static/images/gosth_portrait.png" height="100" width="100">
+                </div>
+                <div id="health_bar_border_gosth">
+                    <div id="gosth_healthbar"></div>
+                </div>
+            </div>
             <div id="inventory">
                 <div id="inventory_grid">
                     <div class="inventory_row">
