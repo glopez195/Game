@@ -233,6 +233,7 @@ shrine_audio.volume = 0;
 shrine_audio.autoplay = true;
 const enemy_attack_sound = new Audio('/static/sounds/aggressive-beast-roar.wav');
 const enemy_engage_sound = new Audio('/static/sounds/aggressive-monster-beast-roar.wav');
+const menu_sound = new Audio('/static/sounds/Abstract1.wav');
 
 //------------------------UI Variables
 const healthBar = document.querySelector('#healthbar');
@@ -401,7 +402,7 @@ const golden_chalice = new Sprite({
 
 const coolEffect = new Sprite({
     position: {
-        x: canvas.width / 2,
+        x: canvas.width / 3 -28,
         y: canvas.height / 5 -20
     },
     image: reborn,
@@ -1393,11 +1394,11 @@ function togglePause() {
     isRunning = !isRunning;
     // call animate() if working
     if (isRunning) {
-        menu.style.opacity = 0;
+        menu.style.display = 'none';
         animate();
     }
     else {
-        menu.style.opacity = 1;
+        menu.style.display = 'flex';
     }
 }
 
