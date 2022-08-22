@@ -207,7 +207,6 @@ class Enemy {
         if(this.moving) return;
         if(this.health <= 0) {
             this.health = 0;
-
         }
         this.playerXpos = playerX;
         this.playerYpos = playerY;
@@ -217,7 +216,7 @@ class Enemy {
             this.moving = true;
             return;
         }
-        else if (this.distance < 250 && this.playerInEngagingZone() && !this.engaged) this.engage();
+        else if (this.distance < 500 && this.playerInEngagingZone() && !this.engaged) this.engage();
         if (this.engaged) this.direction = this.findPlayer();
         this.frames.max = 12;
         this.animation_speed = this.idle_animation_speed;
@@ -373,6 +372,7 @@ class Enemy {
             this.direction = temp_dire[random_direction];
             playerInDanger = false;
             this.engaged = false;
+            adjustSound();
             return true;
         }
         else if (xPosition + this.width > this.mapLimit.position.x + 2000) {
@@ -380,6 +380,7 @@ class Enemy {
             this.direction = temp_dire[random_direction];
             playerInDanger = false;
             this.engaged = false;
+            adjustSound();
             return true;
         }
         else if (yPosition < this.mapLimit.position.y) {
@@ -387,6 +388,7 @@ class Enemy {
             this.direction = temp_dire[random_direction];
             playerInDanger = false;
             this.engaged = false;
+            adjustSound();
             return true;
         }
         else if (yPosition + this.height > this.mapLimit.position.y + 2000) {
@@ -394,16 +396,17 @@ class Enemy {
             this.direction = temp_dire[random_direction];
             playerInDanger = false;
             this.engaged = false;
+            adjustSound();
             return true;
         }
 
     }
 
     modifyVel() {
-        if (this.direction.length > 1 && !this.engaged) this.velocity = 0.7;
-        else if (this.direction.length === 1 && !this.engaged) this.velocity = 1;
-        else if (this.engaged && this.direction.length > 1) this.velocity = 1.5;
-        else this.velocity = 2;
+        if (this.direction.length > 1 && !this.engaged) this.velocity = 1;
+        else if (this.direction.length === 1 && !this.engaged) this.velocity = 2;
+        else if (this.engaged && this.direction.length > 1) this.velocity = 3;
+        else this.velocity = 4;
     }
 
     playerInEngagingZone() {
@@ -415,12 +418,14 @@ class Enemy {
         }
         else {
             playerInDanger = false;
+            adjustSound();
             this.engaged = false;
             return false;
         }
     }
 
     engage() {
+        delayMusic(engage_music);
         playerInDanger = true;
         this.sounds.engaged.play();
         this.engaged = true;

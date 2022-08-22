@@ -1,13 +1,13 @@
 -- SQLite
-UPDATE progress SET progress=13 WHERE progress_id = 9;
-UPDATE inventory SET apple=10,flask=0,dayPotion=3,monsterEgg=0 WHERE inventory_id = 9;
+UPDATE progress SET progress=19 WHERE progress_id = 10;
+--UPDATE inventory SET apple=10,flask=0,dayPotion=3,monsterEgg=0 WHERE inventory_id = 9;
 --SELECT * FROM inventory;
 --DELETE FROM users;
 --DELETE FROM inventory;
 --DELETE FROM progress;
 --DROP TABLE inventory;
 --SELECT * FROM progress;
---SELECT * FROM inventory;
+--SELECT * FROM users;
 -- ALTER TABLE progress ADD COLUMN hour INTEGER;
 --.schema
 --SELECT * FROM progress;

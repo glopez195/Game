@@ -1,7 +1,8 @@
 from email import message
+import email
 import os
 import json
-
+import smtplib
 import sqlite3
 from datetime import datetime
 from flask import Flask, flash, redirect, render_template, request, session, jsonify
@@ -41,10 +42,17 @@ def gameOn():
     return render_template("gameOn.html")
 
 # ----------------------------------------------------------------"/"-------------------------------
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @login_required
-def index():
-        return render_template("index.html")
+def main():
+    if request.method == "POST":
+         session.clear()
+    else:
+        def index():
+            name = request.form.get("name")
+            email = request.form.get("email")
+            message = request.form.get("message")
+            return render_template("index.html")
 
 
 # ----------------------------------------------------------------LOGIN-------------------------------
@@ -127,7 +135,7 @@ def register():
             rows = db.execute("SELECT * FROM users WHERE username = ?", (username,),).fetchall()
             query = "INSERT INTO progress (progress_id, location_x, location_y, health, progress, hour) VALUES (?, ?, ?, ?, ?, ?)"
             session["user_id"] = rows[0][0]
-            db.execute(query, (session['user_id'], -1700, -1700, 100, 0, 8))
+            db.execute(query, (session['user_id'], -2900, -770, 100, 0, 8))
             query = "INSERT INTO inventory (inventory_id, apple,bones,dayPotion,nightPotion,healthPotion,flask,fountainFlask,chaliceFlask,slimeFlask,monsterEgg) VALUES (?,?,?,?,?,?,?,?,?,?,?)"
             db.execute(query, (session['user_id'],0,0,0,0,0,0,0,0,0,0))
             game_db.commit()

@@ -7,9 +7,10 @@ function displayTime() {
             hours = 0;
             invokeGosth();
         }
-        if (hours === 3){
+        if (hours === 3) {
             invokeGosth('out');
         }
+        adjustSound();
         adjustLight();
         hourAdded = true;
     }
@@ -85,5 +86,18 @@ function adjustLight() {
     else if (hours >= 6 && solIsUp === false && hours < 20) {
         time_icon.src = '/static/images/sun.png';
         solIsUp = true;
+    }
+}
+
+function adjustSound() {
+    if (!checkMusic.checked) currentMusic.pause()
+    else if (hours < 4 && hours >= 0 && nigth_music.paused && merchant_music.paused) {
+        delayMusic(nigth_music);
+    }
+    else if (hours >= 4 && hours < 18 && day_music.paused && merchant_music.paused) {
+        delayMusic(day_music);
+    }
+    else if(hours >= 18 && hours < 24 && afternoon_music.paused && merchant_music.paused){
+        delayMusic(afternoon_music);
     }
 }

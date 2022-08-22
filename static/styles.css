@@ -41,6 +41,7 @@ body {
     display: none;
     transition: opacity 2s ease-in;
     justify-content: center;
+    align-items: center;
     padding: 5px 0;
 }
 
@@ -52,7 +53,7 @@ body {
 .update {
     width: 100%;
     opacity: 0.8;
-    border-left: 2px solid #51a8ea;
+    border-left: 2px solid #ffc107;
     background-color: #0b0b0b;
     text-align: left;
     padding: 20px 20px;
@@ -135,14 +136,14 @@ h1 {
 
 .lights span {
     position: relative;
-    width: 30px;
-    height: 30px;
-    background: rgb(164, 57, 202);
+    width: 4vh;
+    height: 4vh;
+    background: #face49;
     margin: 0 4px;
     border-radius: 50%;
-    box-shadow: 0 0 0 10px rgb(78, 24, 98),
-        0 0 50px rgb(164, 57, 202),
-        0 0 100px rgb(164, 57, 202);
+    box-shadow: 0 0 0 10px #9a7405,
+        0 0 50px #ffc107,
+        0 0 100px #ffc107;
     animation: animate 15s linear infinite;
     animation-duration: calc(125s / var(--i));
 }
@@ -165,7 +166,7 @@ h1 {
 }
 
 .card:hover {
-    border: 2px solid #77c4ff;
+    border: 2px solid #ffc107;
 }
 
 .inside_p {
@@ -235,6 +236,7 @@ h1 {
     height: 720px;
     width: 1280px;
     position: absolute;
+    background-repeat: no-repeat;
 }
 
 #inventory_wrapper {
@@ -358,8 +360,8 @@ h1 {
     border: 2px solid #000;
     border-radius: 20px;
     margin: 10px;
-    width: 300px;
-    height: 200px;
+    width: 400px;
+    height: 230px;
     background: rgb(255, 255, 255);
     background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(204, 204, 204, 1) 100%);
 }
@@ -446,7 +448,7 @@ h1 {
 }
 
 #controls{
-    padding: 20px;
+    padding: 10px 20px 20px 20px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -455,6 +457,31 @@ h1 {
 }
 
 .g-btn {
-    margin: 20px;
+    margin: 0px;
     width: 250px !important;
+}
+
+.bb {
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+    animation: cinema 5s forwards;
+    background-color: #000;
+    flex-direction: column;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    color: wheat !important;
+    font-size: 25px !important;
+}
+
+@keyframes cinema {
+    0% {height: 0%;}
+    100% {height: 20%;}
+}
+
+.form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
 }
