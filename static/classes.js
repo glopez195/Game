@@ -383,7 +383,7 @@ class Enemy {
             adjustSound();
             return true;
         }
-        else if (yPosition < this.mapLimit.position.y) {
+        else if (yPosition + this.height/3 < this.mapLimit.position.y) {
             temp_dire = ['sw', 's', 'se'];
             this.direction = temp_dire[random_direction];
             playerInDanger = false;
