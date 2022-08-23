@@ -114,6 +114,8 @@ body {
 
 #contenedor {
     position: fixed;
+    display: flex;
+    justify-content: center;
     width: 100%;
     z-index: 10;
     height: 150vh;
@@ -170,7 +172,7 @@ h1 {
 }
 
 .inside_p {
-    font-size: x-large;
+    font-size: 1em;
     color: rgb(25, 192, 119);
 }
 

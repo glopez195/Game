@@ -43,16 +43,15 @@ def gameOn():
 
 # ----------------------------------------------------------------"/"-------------------------------
 @app.route("/", methods=["GET", "POST"])
-@login_required
 def main():
     if request.method == "POST":
          session.clear()
     else:
+        return render_template("index.html")
         def index():
             name = request.form.get("name")
             email = request.form.get("email")
             message = request.form.get("message")
-            return render_template("index.html")
 
 
 # ----------------------------------------------------------------LOGIN-------------------------------
@@ -201,21 +200,18 @@ def logout():
 
 # ----------------------------------------------------------------Updates-------------------------------
 @app.route("/updates")
-@login_required
 def updates():
     """Updates for the game"""
     return render_template("updates.html")
 
 # ----------------------------------------------------------------About-------------------------------
 @app.route("/about")
-@login_required
 def about():
     """About the game"""
     return render_template("about.html")
 
 # ----------------------------------------------------------------Credits-------------------------------
 @app.route("/credits")
-@login_required
 def credits():
     """About the game"""
     return render_template("credits.html")

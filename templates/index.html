@@ -4,37 +4,62 @@ Home
 {% endblock %}
 
 {% block main %}
-<div class="main">
+<div class="main" style="display: flex; justify-content:center;flex-direction:column;align-items:center;">
     <h1 class="g_world display-1">Home</h1>
 
     <div class="row"
         style="padding:5vh; margin: 15vh 2vh;display: flex; flex-direction: row;background-color:rgba(70, 105, 117, 0.8);">
-        <div class="col-md-6"
-            style="display: flex;justify-content: space-around; align-items: center; flex-direction:row; padding: 2vw;">
-            <a href="/updates">
-                <button type="button" class="btn btn-primary position-relative">
-                    New Updates!
-                    <span
-                        class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
-                        <span class="visually-hidden">New alerts</span>
-                    </span>
-                </button>
-            </a>
-            <img src="/static/images/day_and_night.png" height="150" width="150">
-        </div>
-        <div class="col-md-6" style="display: flex; align-items:center;">
-            <div
-                style="font-size: large;padding:2vw; margin:0; background-color: rgba(255, 255, 255, .8);color:  #0b0b0b;">
-                <h3>Good morning... or night</h3>
-                <p>Check out the new day and night features.</p>
+        <div class="col-md-6" style="display: flex; justify-content:center;flex-direction:column;">
+            <h2 style="color: rgb(209, 209, 209);font-size: 40px;">Welcome to G's World!</h2>
+            <div style="color:silver;font-size:25px;">
+                <style>
+                    a:link {
+                        color: #ffc107;
+                        background-color: transparent;
+                        text-decoration: none;
+                    }
+
+                    a:visited {
+                        color: #ffc107;
+                        background-color: transparent;
+                    }
+
+                    a:hover {
+                        color: #ffdb71;
+                        background-color: transparent;
+                        text-decoration: none;
+                    }
+
+                    a:active {
+                        color: rgb(255, 255, 219);
+                        background-color: transparent;
+                        text-decoration: none;
+                    }
+                </style>
+                G's World is a small videogame initially made for a project, and now published publically for anyone
+                to explore and experience this short interactive story. <br>
+                Know more about it <a href="/about">here</a>.
             </div>
         </div>
+        <div class="col-md-6" style="display: flex; align-items:center;justify-content: center;">
+            <video width="550" controls loop autoplay>
+                <source src="/static/images/Small video for website.mp4" type="video/mp4">
+            </video>
+        </div>
     </div>
-    <h2 style="color: white;">Contact Me!</h2>
-    <form action="/" method="POST">
-        
-    </form>
-
+    <div
+        style="color:silver;width:70%;display: flex;flex-direction: column;justify-content: center;background-color:rgba(70, 105, 117, 0.8);border-radius: 20px;padding:20px;">
+        <h2 style="color: white;">Tips</h2>
+        <ul style="text-align: left;font-size:medium;">
+            <li>Creating an account is mandatory to play the game, there is no data being collected and the password is
+                encoded before being stored in the database. However, there is no way to change your password or retrieve a
+                user name so don't forget it.</li>
+            <li>Press 'esc' and the "Save" button to save your progress and to ensure that you don't have to start over if you
+                die or get disconnected.</li>
+            <li>Remember this game is a project made by one person so some details are not as elaborate as other bigger
+                games, but if you encounter a bug, don't hesitate to get in contact with me.</li>
+        </ul>
+    </div>
 
 </div>
 {% endblock %}

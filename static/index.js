@@ -41,9 +41,9 @@ let x = document.createElement("VIDEO");
 x.style.height = '100%';
 x.style.width = '100%';
 x.muted = true;
-x.src = '/static/images/Default_Startup.mp4'; 
+x.src = '/static/images/credits.mp4'; 
 x.loop = false;
-
+let creditsShowing = false;
 // Gosth
 const gosth_attack_animation_speed = 2;
 const gosth_idle_animation_speed = 4;
@@ -113,8 +113,6 @@ const healthPotion = new Image();
 healthPotion.src = '/static/images/health_potion.png';
 const bonesIcon = new Image();
 bonesIcon.src = 'static/images/Bone.png';
-const blackPotion = new Image();
-blackPotion.src = 'static/images/black_potion.png';
 const slimeImg = new Image();
 slimeImg.src = '/static/images/slime.png';
 const monsterEggImg = new Image();
@@ -155,6 +153,9 @@ const playerUpAttack = new Image();
 playerUpAttack.src = '/static/images/WarriorUpAttack01.png';
 const playerRightAttack = new Image();
 playerRightAttack.src = '/static/images/WarriorRightAttack01.png';
+const lastAttack = new Image();
+lastAttack.src = '/static/images/WarriorLastAttack.png';
+
 
 const bubbleImg = new Image();
 bubbleImg.src = '/static/images/bubble.png';
@@ -389,7 +390,8 @@ const player = new Player({
         downAttack: playerDownAttack,
         upAttack: playerUpAttack,
         leftAttack: playerLeftAttack,
-        rightAttack: playerRightAttack
+        rightAttack: playerRightAttack,
+        lastAttack: lastAttack
     }
 })
 
@@ -438,7 +440,8 @@ const gosth = new Enemy({
         up_left_Attack: enemyAttackNW,
         up_right_Attack: enemyAttackNE,
         left_Attack: enemyAttackW,
-        right_Attack: enemyAttackE
+        right_Attack: enemyAttackE,
+        death: enemyDeath
     }
 })
 
@@ -701,8 +704,8 @@ async function gameStarts() {
             uiAll.style.backgroundImage = 'none';
             setTimeout(()=>{
                 chat.style.opacity = 0;
-            },3000);
-        }, 6000);
+            },5000);
+        }, 7000);
     } else if (current_mission >= 19) {
         playerPower = 20;
         gosth.power = 30;
@@ -713,7 +716,7 @@ async function gameStarts() {
         setTimeout(() => {
             adjustSound();
         }, 1000);
-    }, 4000);
+    }, 7000);
 }
 
 
@@ -1407,7 +1410,6 @@ function objectsDrawing() {
     if (merchant.goldenKeyOnDisplay) goldenKey.draw();
     // draw merchant
     // Draw blue lights
-    if (hours === 0) blueLights.draw();
     coolEffect.interact();
     darkness.interact();
     if (gosthFree) {
@@ -1415,6 +1417,7 @@ function objectsDrawing() {
         drawCharacters();
     } else player.draw();
     foreground.draw();
+    if (hours === 0) blueLights.draw();
     golden_chalice.draw();
 }
 
@@ -1809,7 +1812,7 @@ function lastScene() {
     backGround.draw();
     player.draw();
     if (player.position.x === canvas.width / 2 - 50) {
-        player.image.src = '/static/images/WarriorLastAttack.png';
+        player.image = player.sprites.lastAttack;
         player.position.y -= 70;
         player.moving = true;
         player.frames.val = 0;
@@ -1844,7 +1847,7 @@ function lastScene() {
 
 function playAnimationDead() {
     if (gosth.engaged) {
-        gosth.image.src = '/static/images/enemy.death.png';
+        gosth.image = gosth.sprites.death;
         gosth.frames.max = 24;
         gosth.frames.val = 0;
         gosth.animation_speed = 5;
@@ -1856,9 +1859,9 @@ function playAnimationDead() {
             ok4RealLastScene();
         },3000);
         setTimeout(()=>{
-            const textnode = document.createTextNode("Thank you Hero you have retorned the light to G's World.");
+            const textnode = document.createTextNode("Thank you Hero! You have returned the light to G's World.");
             chat.appendChild(textnode);
-            const textnode1 = document.createTextNode("The journy has just began, but you have set us to a great start.");
+            const textnode1 = document.createTextNode("The journey has just begun, but thanks to you now we have a chance!");
             pw.appendChild(textnode1);
             setTimeout(()=>{
                 const textnode2 = document.createTextNode("- G");
@@ -1883,12 +1886,18 @@ function  ok4RealLastScene(){
 }
 
 function credits(){
+    if (creditsShowing) return;
+    creditsShowing = true;
     window.cancelAnimationFrame(ok4RealLastScene);
     while (uiAll.hasChildNodes()) {
         uiAll.removeChild(uiAll.firstChild);
     }
     uiAll.appendChild(x);
     x.play();
+    setTimeout(()=>{
+        x.pause();
+        uiAll.backGround = 'black';
+    },17000);
 }
 
 function delayMusic(sound) {

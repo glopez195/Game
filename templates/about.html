@@ -32,23 +32,44 @@ About
             }
         </style>
         <p><span class="inside_p" style="color:#ffc107">G's World</span> is a project I started working on for the
-            <a href="https://cs50.harvard.edu/x/2022/">CS50X</a> course. However, for me, it has evolved to become a
-            personal project and goal I am committed to completing and polishing until I am satisfied with the results
-            (perhaps never). The project consists of a game that takes place in the world I've created (G). All the
-            coding is done in <span class="inside_p">Vanilla JavaScript</span> with the help of some <span
-                class="inside_p">API's</span>, <span class="inside_p">HTML</span>, <span class="inside_p">CSS</span> and
-            the work of some awesome artists in Itch.io (don't forget to check out their work in <a
-                href="/credits">Credits</a>).
-            <br>
-            The game is still under development so there's not much to do for now, but if you come back soon you might
-            be surprised.
-            <br> In order to create a great user experience, I have designed a Backend part for this project using <span
-                class="inside_p">Python</span>
-            with <span class="inside_p">Flask</span> and <span class="inside_p">SQLite3</span> for saving the data in
-            the server. There is no need to press a save button, by just closing the window the game will automatically
-            save your progress. <br>
-            I hope this project finds people who are interested in exploring G's World and that they get to enjoy this
-            piece of me on the vast WWW.
+            <a href="https://cs50.harvard.edu/x/2022/">CS50X</a> course. I decided to create is a small RPG top-down
+            style video game. The story goes around G's world where you (a noble knight) help a medieval village fight
+            against the night creatures terrorizing their world. At the beginning it's almost impossible to defeat the
+            beast alone. However, the village's merchant provides some assistance. She sends you around the map to
+            gather specific ingredients that combine to make a magic potion that will help you confront the beast with a
+            chance of making it out alive. This potion helps you acquire the necessary strength to slay the night
+            creature…or die trying. <br><br>
+
+            Pressing the 'esc' key will open this menu that provides you with the basic options. The UI consists of
+            portraits, chats, healthbars, a clock, an inventory and your user name. The mechanics of the game circle
+            around the time factor. Cycling through the 24h of a day, G's World is no exception to the grasp of Time.
+            The fact that the creature roams freely only at night and that certain items can only be found in the light
+            or dark makes the way you approach your survival crucial. As a result, I have
+            implemented potions that transform the time to day or night, their use is essential not only to find the
+            items but also to escape some sticky situations. The monster in the game was definitely one the most fun
+            parts to code, and the decision to make him go through objects makes the path finder algorithm almost too
+            easy, but I encountered myself adding many details and mechanics to the game and delaying the deadline a lot
+            to finish the project, so I tried to keep it simple since collisions and overlaying was one of the hardest
+            things to tackle without an actual Game Engine to facilitate the work. Still, I added different items you
+            can pick up, and cool animations and sounds for each interaction. <br><br>
+
+            The artistic side of the game consists of a compilation of assets made by great artists in Itch.io which I
+            can't thank enough for allowing me, and everyone else to use. I have included a sub domain called <a href="https://guilopzv.pythonanywhere.com/credits">Credit</a>
+            where I mention their contributions and show where to find more of their content. Putting it together was no
+            easy task since I had to experiment with several styles to figure out what combined. But, I learned a lot
+            about pixel art, games styles and definitely gained a lot of respect for all the time and effort these
+            people put in their projects and although it took me some time to adapt and replace some of them later, I am
+            content with the end result.<br><br>
+
+            Behind the hood is just plain Javascript which I have explored a lot over the last month and spent hours
+            trying new APIs, googling and debugging and reading through pages of documentation and good old
+            Stackoverflow. Jinja was definitely useful to create templates and keep consistency on the web application
+            and I learned a lot more about HTML and CSS, creating, editing and deleting content from inside the Js file.
+            The backend of the project works with Python more specifically using Flask to manage the logic behind all
+            navigation and flow of data in the web application and Sqlite3 for creating my database and saving all the users progress once they
+            click the Save button and asynchronously downloading their game data once they log back in or die in the
+            game.
+
         </p>
     </div>
 </div>

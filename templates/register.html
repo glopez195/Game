@@ -5,7 +5,7 @@ Register
 {% endblock %}
 
 {% block main %}
-<div class="main" style="margin-top:5vw;">
+<div class="main" style="display:flex;height:100vh;align-items:center; justify-content:center;">
     <form action="/register" method="post">
         <div class="mb-3">
             <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username"
@@ -19,7 +19,7 @@ Register
             <input class="form-control mx-auto w-auto" id="password" name="confirmation" placeholder="Confirm Password"
                 type="password">
         </div>
-        <button class="btn btn-primary" type="submit">Register</button>
+        <button class="btn btn-warning btn-lg g-btn" type="submit">Register</button>
     </form>
 </div>
 {% endblock %}
