@@ -1,5 +1,5 @@
 # G's World
-#### Video Demo:  <URL https://www.youtube.com/watch?v=GcChSkoIX-E&t=6s>
+#### Video Demo:  <URL https://www.youtube.com/watch?v=5Nkg0XmLVh4>
 #### Description:
 ##### Story:
 G's World is a project I started working on for the CS50X course. I decided to create is a small RPG top-down style video game. The story goes around G's world where you (a noble knight) help a medieval village fight against the night creatures terrorizing their world. At the beginning it's almost impossible to defeat the beast alone. However, the village's merchant provides some assistance. She sends you around the map to gather specific ingredients that combine to make a magic potion that will help you confront the beast with a chance of making it out alive. This potion helps you acquire the necessary strength to slay the night creature…or die trying.

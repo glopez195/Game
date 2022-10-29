@@ -1,3 +1,4 @@
+// this function is to keep track of time and its changes
 function displayTime() {
     clock = new Date();
     minutes = clock.getSeconds();
@@ -5,10 +6,10 @@ function displayTime() {
         hours++;
         if (hours === 24) {
             hours = 0;
-            invokeGosth();
+            invokeghost();
         }
         if (hours === 3) {
-            invokeGosth('out');
+            invokeghost('out');
         }
         adjustSound();
         adjustLight();
@@ -20,6 +21,7 @@ function displayTime() {
     time.innerHTML += minutes;
 }
 
+// depending on the time it changes the scene
 function adjustLight() {
     switch (hours) {
         case 0:
@@ -89,6 +91,7 @@ function adjustLight() {
     }
 }
 
+// depending on the situation it plays a different track
 function adjustSound() {
     if (!checkMusic.checked) currentMusic.pause()
     else if (hours < 4 && hours >= 0 && nigth_music.paused && merchant_music.paused) {

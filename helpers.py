@@ -5,10 +5,14 @@ import urllib.parse
 from flask import redirect, render_template, request, session
 from functools import wraps
 
+# Template to render any errors encountered while navigating the website, creating an account or logging in.
+
 
 def apology(message, code=400):
     """Render message as an apology to user."""
     return render_template("apology.html", code=code, message=message)
+
+# Making sure there is a user logged in before starting the game
 
 
 def login_required(f):
@@ -23,4 +27,3 @@ def login_required(f):
             return redirect("/login")
         return f(*args, **kwargs)
     return decorated_function
-

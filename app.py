@@ -1,3 +1,8 @@
+# This Flask App serves as the backend part of a game made in JavaScript
+# Functions like Login Register and normal user interactions are implemented
+# But also all DB functionality to save the players data whenever he saves the game.
+
+
 from email import message
 import email
 import os
@@ -34,7 +39,7 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-
+# This template contains the canvas where the game takes place
 @app.route("/gameOn", methods=["GET", "POST"])
 @login_required
 def gameOn():
@@ -48,10 +53,6 @@ def main():
          session.clear()
     else:
         return render_template("index.html")
-        def index():
-            name = request.form.get("name")
-            email = request.form.get("email")
-            message = request.form.get("message")
 
 
 # ----------------------------------------------------------------LOGIN-------------------------------
@@ -100,9 +101,9 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
+
     # Making sure it was a POST request no get
     if request.method == "POST":
-
         with sqlite3.connect('game.db') as game_db:
             db = game_db.cursor()
 
@@ -158,7 +159,11 @@ def play():
 # ----------------------------------------------------------------Initialize Game-------------------------------
 @app.route("/getStats")
 @login_required
+
+# getStats it's called at the beggining of each session to gather all the saved data from previous games
 def getStats():
+
+    # Query the players state and saving it
     with sqlite3.connect('game.db') as game_db:
         db = game_db.cursor()
         row = db.execute("SELECT * FROM progress WHERE progress_id = ?", (session['user_id'],),).fetchall()
@@ -169,6 +174,8 @@ def getStats():
             'progress':row[0][4],
             'hour': row[0][1]
         }
+
+        # Then querying for the inventory
         row = db.execute("SELECT * FROM inventory WHERE inventory_id = ?", (session['user_id'],),).fetchall()
         inventory = [
             {'name':'apple', 'count': row[0][1]},
@@ -183,7 +190,6 @@ def getStats():
             {'name':'monsterEgg','count': row[0][10]},
         ]
         row = db.execute("SELECT * FROM inventory WHERE inventory_id = ?", (session['user_id'],),).fetchall()
-        print(row)
         return jsonify(user_data,inventory)
 
 # ----------------------------------------------------------------Logout-------------------------------
@@ -220,16 +226,16 @@ def credits():
 @app.route("/saveProgress", methods=["GET", "POST"])
 @login_required
 def saveProgress():
+
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        print('Progress => POST')
         request_data = request.get_data()
         json_string = str(request_data)
         user_data = json.loads(json_string[2:-1])
-        print(user_data)
         with sqlite3.connect('game.db') as game_db:
             db = game_db.cursor()
-            # Save location in db
+
+            # Save all the users data in the DB
             query = "UPDATE progress SET location_x = ?,location_y = ?, hour = ?, progress = ? WHERE progress_id = ?"
             db.execute(query, (user_data['xLocation'], user_data['yLocation'], user_data['hour'], user_data['progress'],session['user_id']))
             query = "UPDATE inventory SET apple=?,bones=?,dayPotion=?,nightPotion=?,healthPotion=?,flask=?,fountainFlask=?,chaliceFlask=?,slimeFlask=?,monsterEgg=? WHERE inventory_id = ?"
@@ -237,7 +243,7 @@ def saveProgress():
             for item in user_data['inventory']:
                 if item != None:
                     name = item['name']
-                    # Making sure no special characters are inserted for SQL injections
+                    # Making sure no special characters are inserted in the DB (for SQL injections)
                     if name.isalpha():
                         query = "UPDATE inventory SET " + name + " = ? WHERE inventory_id = ?"
                         db.execute(query, (item['count'], session['user_id']))
@@ -245,5 +251,4 @@ def saveProgress():
             return ('',200)
 
     else:
-        print('Progress => GET')
         return ('',200)

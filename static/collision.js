@@ -1,3 +1,4 @@
+// This is the collision array
 const collisions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -49,6 +50,7 @@ const collisions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+// this is the array with all the items
 const apples_json = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -100,37 +102,39 @@ const apples_json = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+
+    // This are the lines of the merchant, the random tips and also the mission objectives
     const randomFacts = {
-        0: '<span style="color:#dc3545;">Tip:</span> Careful at night! A scary creature roams around south of here.',
-        1: '<span style="color:#dc3545;">Tip:</span> The night creature can be hard to kill without the proper equipment. Bring me some trinkets and I will give you something to help raise your odds.',
-        2: '<span style="color:#dc3545;">Tip:</span> Apples can be really tasty! Nothing like a good snack to boost your health.',
-        3: '<span style="color:#dc3545;">Tip:</span> The day potion will help you find the light in your moments of darkness!',
-        4: '<span style="color:#dc3545;">Tip:</span> Night potions can be helpful to collect items you need. But be CAREFUL, this potion can be a double-edge sword. The darkness attracts the most dreadful creatures!',
-        5: '<span style="color:#dc3545;">Tip:</span> Need help fighting?! Bring me what I need and I can make sure that no one will ever challenge you. ',
-        6: '<span style="color:#dc3545;">Tip:</span> Stay positive, I\'ve faith you will restore peace in G\'s World.'
+        0: '<span style="color:#dc3545;">Tip:</span>  🛑 Careful at night! A scary creature roams around south of here. 🛑',
+        1: '<span style="color:#dc3545;">Tip:</span>  💀 The night creature can be hard to kill without the proper equipment. Bring me some trinkets and I will give you something to help raise your odds. 💀',
+        2: '<span style="color:#dc3545;">Tip:</span>  🍎 Apples can be really tasty! Nothing like a good snack to boost your health. 🍎',
+        3: '<span style="color:#dc3545;">Tip:</span>  🌞 The day potion will help you find the light in your moments of darkness! 🌞',
+        4: '<span style="color:#dc3545;">Tip:</span>  🌙 Night potions can be helpful to collect items you need. But be CAREFUL, this potion can be a double-edge sword. The darkness attracts the most dreadful creatures! 🌙',
+        5: '<span style="color:#dc3545;">Tip:</span>  ⚔️ Need help fighting?! Bring me what I need and I can make sure that no one will ever challenge you. ⚔️',
+        6: '<span style="color:#dc3545;">Tip:</span>  😊 Stay positive, I\'ve faith you will restore peace in G\'s World. 😊'
     };
 
     const missions = {
-        0: 'Welcome to G\'s world Hero!! <br> We\'ve been waiting for you for some time, we are in dire need of your assistance.',
-        1: 'Since the death of the last <span style="color:rgb(107, 30, 30);">Grand Warrior</span> the night creatures have started to roam free around here.',
-        2: 'One of them got inside the walls and has started to hunt us at night.',
-        3: 'We are asking you to kill it! <br> I\'ll make sure you are rewarded handsomely of course.',
-        4: 'I know they are inmune to common weapons, or at least really hard to kill that way. <br> But fear not.',
-        5: 'I\'ve studied some incantations myself, bring me the necessesary items and I promise you a fair fight with the monster.',
-        6: 'Lets not waste more time!! I\'ll start with the list',
-        7: 'The forest of G\'s World are very rich in fruits. Particulary apples; they have magic healing properties. Bring me 3 of them.',
-        8: 'Great job! These are some high quality apples.',
-        9: 'Next, bring me a green slime. This defenless creatures are full of potential for magic potions. Unfortunally they only appear at night, so use this night potion and this empty bottle to seal it.',
-        10: 'Fantastic! Well done Hero.',
-        11: 'Now take this flask and fill it with holy water. You will find a good source southwest of here. Just follow the sound of the water. Make sure the sun is hitting the water before you take it, something about the light increases the potential.',
-        12: 'This is looking good, I already feel safer.',
-        13: 'Next, bring me an egg laid by a monster. You wont find any during the day, so be careful. You should follow any trace of feathers, usually they indicaate the way to the nest.',
-        14: 'Fantastic! Well done Hero. Let\'s get to next item.',
-        15: 'I\'ve heard rumors about a golden chalice somewhere south of here, take this and fill it up with the chalices content. The liquid won\'t be of any help unless affected by sunlight, so try not to fill it at night.',
-        16: 'For the glory of the Gods! You found it! Let me check what\'s next.',
-        17: 'Finally, I\'ll need some bones from a corpse, you should be able to find some by the cemetary at midnight, otherwise the sun strips their dark magic away.',
-        18: 'Magnificent Hero, I\'ve been waiting. The formula is almost ready, let me add some of that.',
-        19: 'Ok, drink this. Now you should get a chance at that beast. Also here is a healing potion, use it wisely!',
-        20: 'What are you waiting for? Go there and finish it.',
-        21: 'I knew you could do it!! Thanks a lot hero, your name will never be forgotten here!'
+        0: '😃 Welcome to G\'s world Hero!! <br> We\'ve been waiting for you for some time, we are in dire need of your assistance. 😃',
+        1: '😢 Since the death of the last <span style="color:rgb(107, 30, 30);">Grand Warrior</span> the night creatures have started to roam free around here.😢',
+        2: '😭 One of them got inside the walls and has started to hunt us at night.😭',
+        3: '😤 We are asking you to kill it! <br>  🥺 I\'ll make sure you are rewarded handsomely of course.',
+        4: '😮‍💨 I know they are immune to common weapons, or at least really hard to kill that way. <br>🧐 But fear not.',
+        5: '🤓 I\'ve studied some incantations myself, bring me the necessary items and I promise you a fair fight with the monster. 🤓',
+        6: '🤕 Lets not waste more time!! I\'ll start with the list. 🤕',
+        7: '🙂 The forest of G\'s World are very rich in fruits. 🍎 Particularly apples; they have magic healing properties. Bring me 3 of them. 🍎',
+        8: '😊 Great job! These are some high quality apples. 😊',
+        9: '🙂 Next, bring me a green slime. This defenseless creatures are full of potential for magic potions. Unfortunately they only appear at 🌙 night, so use this night potion and this empty 🫙 bottle to seal it.',
+        10: '😊 Fantastic! Well done Hero. 😊',
+        11: '🙂 Now take this 🫙 flask and fill it with holy water. You will find a good source southwest of here. Just follow the sound of the water. Make sure the 🌞 sun is hitting the water before you take it, something about the light increases the potential. 🙂',
+        12: '🥰 This is looking good, I already feel safer. 🥰',
+        13: '🙂 Next, bring me an 🥚 egg laid by a monster. 🌙 You wont find any during the day, so be careful. You should follow any trace of 🪶 feathers, usually they indicate the way to the nest. 🙂',
+        14: '😲 Fantastic! Well done Hero. Let\'s get to next item. 🥰',
+        15: '🙂 I\'ve heard rumors about a golden 🏆 chalice somewhere south of here, take 🫙 this and fill it up with the chalices content. The liquid won\'t be of any help unless affected by 🌞 sunlight, so try not to fill it at night. 🙂',
+        16: '😲 For the glory of the Gods! You found it! Let me check what\'s next. ☺️',
+        17: '🙂 Finally, I\'ll need some 🦴 bones from a corpse, you should be able to find some by the cemetary at 🌙 midnight, otherwise the sun strips their dark magic away. 🙂',
+        18: '🥰 Magnificent Hero, I\'ve been waiting. The formula is almost ready, let me add some of that. 🤓',
+        19: '😊 Ok, drink this. Now you should get a chance 🗡️ at that beast. Also here is a ❤️‍🩹 healing potion, use it wisely! 😊',
+        20: '😮 What are you waiting for? Go there and finish it. 😮',
+        21: '🥰 I knew you could do it!! Thanks a lot hero, your name will never be forgotten here! 🥰'
     }
